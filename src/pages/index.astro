@@ -172,8 +172,12 @@ const gallery = [
     <div class="gallery__grid">
       {gallery.map((g) => <Photo name={g.name} alt={g.alt} class={g.cls} sizes="(max-width: 900px) 50vw, 33vw" parallax />)}
     </div>
-    <div class="gallery__word display" data-drift="-1" aria-hidden="true">Every stride counts</div>
   </section>
+
+  <!-- Full-width outlined line that slides as you scroll -->
+  <div class="stride" aria-hidden="true">
+    <div class="stride__line display" data-drift="-1">Every stride counts ✦ Every stride counts ✦ Every stride counts ✦</div>
+  </div>
 
   <!-- REVIEWS -->
   <section class="section reviews">
@@ -602,12 +606,16 @@ const gallery = [
   .gallery__grid :global(.g4) { grid-column: 2 / span 5; grid-row: span 3; }
   .gallery__grid :global(.g5) { grid-column: 7 / span 3; grid-row: span 4; }
   .gallery__grid :global(.g6) { grid-column: 10 / span 3; grid-row: span 3; }
-  .gallery__word {
-    font-size: clamp(80px, 14vw, 260px);
+  .stride {
+    overflow: hidden;
+    padding-block: clamp(20px, 4vw, 60px);
+  }
+  .stride__line {
+    font-size: clamp(80px, min(14vw, 26vh), 260px);
     white-space: nowrap;
+    width: max-content;
     color: transparent;
     -webkit-text-stroke: 1.5px rgba(243, 239, 231, 0.3);
-    margin-top: clamp(40px, 6vw, 100px);
   }
   @media (max-width: 760px) {
     .gallery__grid {

@@ -296,8 +296,9 @@ function reveals() {
 
   gsap.utils.toArray<HTMLElement>('[data-drift]').forEach((el) => {
     const dir = Number(el.dataset.drift || -1);
-    gsap.fromTo(el, { xPercent: 0 }, {
-      xPercent: 12 * dir,
+    // The line is ~3 screens wide, so travelling 30% of it never shows an empty edge
+    gsap.fromTo(el, { xPercent: dir < 0 ? 0 : -30 }, {
+      xPercent: dir < 0 ? -30 : 0,
       ease: 'none',
       scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: true },
     });
@@ -308,13 +309,14 @@ function reveals() {
 function velocityMarquee() {
   const tracks = gsap.utils.toArray<HTMLElement>('.marquee__track');
   if (!tracks.length) return;
-  const loops = tracks.map((t) => gsap.to(t, { xPercent: -50, ease: 'none', duration: 30, repeat: -1 }));
+  // Same calm reading speed for every marquee, however long its list is (~55px per second)
+  const loops = tracks.map((t) => gsap.to(t, { xPercent: -50, ease: 'none', duration: t.scrollWidth / 2 / 55, repeat: -1 }));
   let dir = 1;
   const st = ScrollTrigger.create({
     onUpdate: (self) => {
       const v = self.getVelocity();
       if (self.direction !== dir) dir = self.direction;
-      const boost = gsap.utils.clamp(1, 7, 1 + Math.abs(v) / 300);
+      const boost = gsap.utils.clamp(1, 2.5, 1 + Math.abs(v) / 1500);
       loops.forEach((l) => {
         gsap.to(l, { timeScale: boost * dir, duration: 0.2, overwrite: true });
         gsap.to(l, { timeScale: dir, duration: 1.2, delay: 0.25, overwrite: false });
