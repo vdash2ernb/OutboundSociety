@@ -1,0 +1,136 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/logo-circle.webp';
+import { site, nav } from '../data/site';
+import { currentEvent } from '../data/current-event';
+import RegisterButton from './RegisterButton.astro';
+import SplitHeading from './SplitHeading.astro';
+---
+
+<footer class="footer" id="contact">
+  <div class="wrap">
+    <div class="footer__cta">
+      <span class="eyebrow">Next up: {currentEvent.name}</span>
+      <SplitHeading lines={['See you at', 'the start line.']} accentLast />
+      <div class="footer__actions">
+        <RegisterButton />
+        <a class="btn btn--ghost" href={site.facebook} target="_blank" rel="noopener">Follow on Facebook <span class="arrow" aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+
+    <hr class="rule" />
+
+    <div class="footer__grid">
+      <div class="footer__brand">
+        <Image src={logo} alt="Outbound Society logo" width={160} height={160} class="footer__logo" />
+        <p class="muted">A Cebuano non-profit bringing communities together through inclusive, meaningful runs.</p>
+      </div>
+      <div>
+        <h4>Visit</h4>
+        <p><a class="link" href={site.maps} target="_blank" rel="noopener">{site.address}</a></p>
+      </div>
+      <div>
+        <h4>Talk to us</h4>
+        <p><a class="link" href={site.phoneHref}>{site.phone}</a></p>
+        <p><a class="link" href={site.facebook} target="_blank" rel="noopener">facebook.com/OutboundSociety</a></p>
+        <p class="muted small">Facebook is the fastest way to reach us about runs and schedules.</p>
+      </div>
+      <div>
+        <h4>Explore</h4>
+        {nav.map((item) => <p><a class="link" href={item.href}>{item.label}</a></p>)}
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© {new Date().getFullYear()} {site.name}. Every peso goes into the next run.</span>
+      <span>Liloan · Catarman · Consolacion · Compostela · Mandaue · Danao</span>
+    </div>
+  </div>
+  <div class="footer__giant" aria-hidden="true">Outbound</div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    overflow: hidden;
+    padding-top: clamp(80px, 12vw, 180px);
+    background: var(--bg);
+  }
+  .footer__cta {
+    display: grid;
+    gap: 28px;
+    padding-bottom: clamp(60px, 8vw, 120px);
+  }
+  .footer__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 12px;
+  }
+  .footer__grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr 0.7fr;
+    gap: 40px;
+    padding-block: 56px;
+  }
+  .footer__grid h4 {
+    font-size: 12px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+  .footer__grid p {
+    margin: 0 0 8px;
+  }
+  .footer__logo {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    margin-bottom: 18px;
+  }
+  .footer__brand p {
+    max-width: 32ch;
+  }
+  .small {
+    font-size: 14px;
+  }
+  .footer__bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    padding-block: 24px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .footer__giant {
+    font-family: var(--display);
+    text-transform: uppercase;
+    font-size: 27vw;
+    line-height: 0.75;
+    text-align: center;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(243, 239, 231, 0.18);
+    margin-top: 24px;
+    margin-bottom: -2vw;
+    white-space: nowrap;
+    user-select: none;
+  }
+  @media (max-width: 860px) {
+    .footer__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .footer__brand {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 520px) {
+    .footer__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

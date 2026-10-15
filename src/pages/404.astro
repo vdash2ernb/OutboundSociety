@@ -1,0 +1,27 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Off route">
+  <section class="lost wrap">
+    <span class="eyebrow">Error 404</span>
+    <h1>Off<br /><span class="accent">route.</span></h1>
+    <p class="lede">This page took a wrong turn at the water station. Let's get you back on course.</p>
+    <a href="/" class="btn btn--cta">Back to the start line <span class="arrow" aria-hidden="true">→</span></a>
+  </section>
+</Base>
+
+<style>
+  .lost {
+    min-height: 90svh;
+    display: grid;
+    align-content: center;
+    gap: 28px;
+    padding-top: 120px;
+    justify-items: start;
+  }
+  h1 {
+    font-size: clamp(90px, 20vw, 340px);
+    line-height: 0.82;
+  }
+</style>

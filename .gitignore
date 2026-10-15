@@ -1,0 +1,7 @@
+# Raw source media (~800 MB) stays local; optimized copies go into the site build
+source/facebook/photos/
+source/facebook/videos/
+node_modules/
+dist/
+.astro/
+.wrangler/

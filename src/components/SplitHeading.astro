@@ -1,0 +1,20 @@
+---
+// Big heading whose lines slide up into view. Pass lines as an array.
+interface Props {
+  lines: string[];
+  as?: 'h1' | 'h2' | 'h3' | 'p';
+  class?: string;
+  accentLast?: boolean;
+}
+const { lines, as: Tag = 'h2', class: cls, accentLast = false } = Astro.props;
+---
+
+<Tag class:list={[cls, Tag === 'p' && 'display']} data-split aria-label={lines.join(' ')}>
+  {
+    lines.map((line, i) => (
+      <span class="split-line" aria-hidden="true">
+        <span class:list={[accentLast && i === lines.length - 1 && 'outline']}>{line}</span>
+      </span>
+    ))
+  }
+</Tag>

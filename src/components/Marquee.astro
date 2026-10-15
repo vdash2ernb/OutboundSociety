@@ -1,0 +1,23 @@
+---
+interface Props {
+  items: string[];
+}
+const { items } = Astro.props;
+const run = items.flatMap((t) => [t]);
+---
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    {
+      [0, 1].map(() => (
+        <span>
+          {run.map((t) => (
+            <>
+              {t} <i>✦</i>
+            </>
+          ))}
+        </span>
+      ))
+    }
+  </div>
+</div>

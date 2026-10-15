@@ -1,0 +1,302 @@
+---
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import SplitHeading from '../components/SplitHeading.astro';
+import Marquee from '../components/Marquee.astro';
+import { site } from '../data/site';
+
+const services = [
+  {
+    n: '01',
+    title: 'Community runs',
+    text: 'Creative, family-friendly running events for every fitness level: night runs, costume runs, birthday runs and fiesta fundraisers.',
+  },
+  {
+    n: '02',
+    title: 'Event management',
+    text: 'End-to-end planning, logistics and execution for brand activations, sports gatherings and non-profit initiatives across Cebu.',
+  },
+  {
+    n: '03',
+    title: 'Digital marketing',
+    text: 'Amplifying local wellness movements and grassroots events with campaigns that bring people to the start line.',
+  },
+];
+
+const values = [
+  { k: 'Inclusive', v: 'No cut-off pressure. Walkers, kids, seniors and first-timers belong here as much as racers.' },
+  { k: 'Intentional', v: 'Routes chosen with care: the bridge, the lighthouse, the coast, the businesses that make Liloan home.' },
+  { k: 'Safe', v: 'Marshals, hydration stations, kid-only routes and clear briefings before every gun start.' },
+  { k: 'Non-profit', v: 'Every peso we earn goes straight back into organizing the next run and growing the community.' },
+];
+---
+
+<Base title="About" description="Outbound Society is a Cebuano non-profit event organizer founded by Roefan Jugalbot in Catarman, Liloan. Running for a better tomorrow.">
+  <section class="ahero wrap">
+    <span class="eyebrow">About Outbound Society</span>
+    <SplitHeading as="h1" lines={['Running for', 'a better', 'tomorrow.']} accentLast />
+    <div class="ahero__grid">
+      <Photo name="hnr25-crew" alt="Runners with their medals in front of Bakeria Box" sizes="(max-width: 900px) 100vw, 55vw" loading="eager" parallax />
+      <div class="ahero__text" data-fade>
+        <p class="lede">
+          Outbound Society is a non-profit event organizer creating intentional, inclusive and meaningful running experiences while breaking the norms of traditional racing.
+        </p>
+        <p class="muted">
+          Founded by {site.founder} and based in Purok Ube, Catarman, Liloan, we bring communities together through movement, wellness and genuine human connection, from first-ever 3 km walks to personal-best chases.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <Marquee items={['Move', 'Meet new friends', 'Run together', 'Repeat']} />
+
+  <section class="section wrap mission">
+    <div class="mission__big display" data-words>
+      {'Our goal is simple: create more chances for people to move, meet new friends and enjoy running together.'.split(' ').map((w) => <span class="w">{w} </span>)}
+    </div>
+  </section>
+
+  <section class="section wrap story">
+    <div class="story__photo">
+      <Photo name="cielo26-dad" alt="A father and his daughter smiling after a night run" sizes="(max-width: 900px) 100vw, 40vw" parallax />
+    </div>
+    <div class="story__text">
+      <span class="eyebrow">Why we do this</span>
+      <SplitHeading lines={['Saved from', 'his baon.']} accentLast />
+      <p class="lede" data-fade>
+        One night, a high-school student messaged us right after registering for the Haunted Night Run. He had saved his school allowance, little by little, so he could afford to join.
+      </p>
+      <p class="muted" data-fade>
+        That's the kind of runner we build for. It's why our entry fees stay low, why every peso goes back into the next run, and why the finish line is a celebration for everyone who crosses it, not just the fastest.
+      </p>
+    </div>
+  </section>
+
+  <section class="section values">
+    <div class="wrap">
+      <span class="eyebrow">What we stand for</span>
+      <div class="values__grid">
+        {
+          values.map((v, i) => (
+            <div class="value" data-fade={i * 0.06}>
+              <h3>{v.k}</h3>
+              <p class="muted">{v.v}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="section wrap services">
+    <div class="services__head">
+      <span class="eyebrow">What we do</span>
+      <SplitHeading lines={['More than', 'a run club.']} />
+      <p class="muted" data-fade>Beyond our own signature runs, we plan and promote events for local brands and community initiatives across Cebu North.</p>
+    </div>
+    <div class="services__list">
+      {
+        services.map((s) => (
+          <div class="service" data-fade>
+            <span class="accent">{s.n}</span>
+            <h3>{s.title}</h3>
+            <p class="muted">{s.text}</p>
+          </div>
+        ))
+      }
+    </div>
+    <div class="services__photo">
+      <Photo name="pickleball-group" alt="Players at the SRCDC 1st Alumni Pickleball Meet organized by Outbound Society" sizes="100vw" parallax />
+      <span class="caption">SRCDC 1st Alumni Pickleball Meet, organized by Outbound Society</span>
+    </div>
+  </section>
+
+  <section class="section wrap where">
+    <div>
+      <span class="eyebrow">Where we run</span>
+      <SplitHeading lines={['Cebu', 'North.']} accentLast />
+    </div>
+    <div class="where__list" data-fade>
+      {site.coverage.map((c) => <span class="display">{c}</span>)}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ahero {
+    padding-top: clamp(130px, 16vw, 220px);
+    display: grid;
+    gap: 28px;
+  }
+  .ahero :global(h1) {
+    font-size: clamp(72px, 12vw, 220px);
+    line-height: 0.85;
+  }
+  .ahero__grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: clamp(28px, 5vw, 90px);
+    align-items: end;
+    margin-top: clamp(30px, 5vw, 70px);
+    padding-bottom: clamp(60px, 8vw, 120px);
+  }
+  .ahero__grid :global(.media) {
+    aspect-ratio: 4 / 3;
+  }
+  .ahero__text {
+    display: grid;
+    gap: 18px;
+  }
+  @media (max-width: 900px) {
+    .ahero__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .mission__big {
+    font-size: clamp(40px, 6.4vw, 116px);
+    line-height: 0.95;
+  }
+
+  .story {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(32px, 6vw, 110px);
+    align-items: center;
+  }
+  .story__photo :global(.media) {
+    aspect-ratio: 4 / 5;
+  }
+  .story__text {
+    display: grid;
+    gap: 24px;
+  }
+  @media (max-width: 900px) {
+    .story {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .values {
+    background: var(--bg-2);
+  }
+  .values__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    margin-top: 40px;
+  }
+  .value {
+    background: var(--bg-2);
+    padding: clamp(24px, 3vw, 44px);
+    display: grid;
+    gap: 16px;
+    align-content: start;
+    min-height: 280px;
+    transition: background-color 0.5s var(--ease);
+  }
+  .value:hover {
+    background: var(--bg);
+  }
+  .value h3 {
+    font-size: clamp(32px, 3vw, 52px);
+  }
+  .value p {
+    margin: 0;
+  }
+  @media (max-width: 1000px) {
+    .values__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 560px) {
+    .values__grid {
+      grid-template-columns: 1fr;
+    }
+    .value {
+      min-height: 0;
+    }
+  }
+
+  .services {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(32px, 6vw, 100px);
+  }
+  .services__head {
+    display: grid;
+    gap: 22px;
+    align-content: start;
+  }
+  .services__list {
+    border-top: 1px solid var(--line);
+  }
+  .service {
+    display: grid;
+    grid-template-columns: 50px 1fr;
+    gap: 6px 20px;
+    padding-block: 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .service span {
+    font-weight: 800;
+    padding-top: 8px;
+  }
+  .service p {
+    grid-column: 2;
+    margin: 0;
+  }
+  .services__photo {
+    grid-column: 1 / -1;
+    margin-top: clamp(30px, 5vw, 80px);
+  }
+  .services__photo :global(.media) {
+    aspect-ratio: 21 / 9;
+  }
+  .caption {
+    display: block;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+  }
+  @media (max-width: 900px) {
+    .services {
+      grid-template-columns: 1fr;
+    }
+    .services__photo :global(.media) {
+      aspect-ratio: 4 / 3;
+    }
+  }
+
+  .where {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(32px, 6vw, 100px);
+    align-items: end;
+  }
+  .where__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 22px;
+  }
+  .where__list span {
+    font-size: clamp(36px, 4.4vw, 76px);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--fg);
+    transition: color 0.4s;
+  }
+  .where__list span:first-child,
+  .where__list span:hover {
+    color: var(--orange);
+    -webkit-text-stroke-color: var(--orange);
+  }
+  @media (max-width: 900px) {
+    .where {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

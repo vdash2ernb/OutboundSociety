@@ -1,0 +1,18 @@
+---
+import { currentEvent } from '../data/current-event';
+interface Props {
+  label?: string;
+  class?: string;
+}
+const { label = 'Register now', class: cls } = Astro.props;
+---
+
+{
+  currentEvent.registrationOpen ? (
+    <a class:list={['btn btn--cta', cls]} href={currentEvent.registerUrl} target="_blank" rel="noopener" data-magnetic>
+      {label} <span class="arrow" aria-hidden="true">→</span>
+    </a>
+  ) : (
+    <span class:list={['btn btn--disabled', cls]}>Registration closed</span>
+  )
+}

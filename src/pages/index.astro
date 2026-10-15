@@ -1,0 +1,583 @@
+---
+import Base from '../layouts/Base.astro';
+import Photo from '../components/Photo.astro';
+import SplitHeading from '../components/SplitHeading.astro';
+import Marquee from '../components/Marquee.astro';
+import RegisterButton from '../components/RegisterButton.astro';
+import { currentEvent } from '../data/current-event';
+import { pastEvents, stats } from '../data/past-events';
+import { reviews } from '../data/site';
+
+const manifesto =
+  "We're not here for podiums. We're here for the people who show up: first-timers, walkers, kids in costumes, and every runner in between.";
+const words = manifesto.split(' ');
+const hot = new Set(['podiums.', 'show', 'up:', 'kids', 'costumes,']);
+
+const clips = [
+  { src: '/video/hero-start.mp4', poster: '/video/hero-start.jpg', label: "Runners leaving the start line at Cielo's Happy Pace" },
+  { src: '/video/hero-bridge.mp4', poster: '/video/hero-bridge.jpg', label: 'Night runners crossing Liloan Bridge at Heart & Sole' },
+  { src: '/video/hero-costumes.mp4', poster: '/video/hero-costumes.jpg', label: 'Costumed runners at the Haunted Night Run' },
+];
+
+const gallery = [
+  { name: 'hnr25-dino', alt: 'A kid runner in an inflatable dinosaur costume', cls: 'g1' },
+  { name: 'cielo26-friends', alt: 'Two runners holding their race bibs at night', cls: 'g2' },
+  { name: 'hnr25-jump', alt: 'Runners in skeleton costumes jumping mid-air', cls: 'g3' },
+  { name: 'foam-party', alt: "Foam party after Cielo's Happy Pace", cls: 'g4' },
+  { name: 'cielo26-dad', alt: 'A father and daughter after the run', cls: 'g5' },
+  { name: 'hnr25-queen', alt: 'A runner dressed as a queen at the Haunted Night Run', cls: 'g6' },
+];
+---
+
+<Base>
+  <!-- HERO -->
+  <section class="hero" data-hero>
+    <div class="hero__clips" aria-hidden="true">
+      {
+        clips.map((c, i) => (
+          <div class:list={['hero__clip', i > 0 && 'hero__clip--wide']}>
+            <video src={c.src} poster={c.poster} muted loop playsinline preload={i === 0 ? 'auto' : 'metadata'} data-autoplay aria-label={c.label} />
+          </div>
+        ))
+      }
+    </div>
+    <div class="hero__shade" aria-hidden="true"></div>
+    <div class="hero__content wrap">
+      <p class="eyebrow" data-hero-fade>Community runs · Liloan, Cebu</p>
+      <h1 class="hero__title" aria-label="Run the night.">
+        <span class="split-line" aria-hidden="true"><span>Run</span></span>
+        <span class="split-line" aria-hidden="true"><span>the night<em class="accent">.</em></span></span>
+      </h1>
+      <div class="hero__foot">
+        <p class="lede" data-hero-fade>
+          Inclusive, meaningful runs for every pace. Run, jog, walk or come in costume. Nobody gets left behind.
+        </p>
+        <div class="hero__actions" data-hero-fade>
+          <RegisterButton label={`Join ${currentEvent.name}`} />
+          <a href="/about/" class="btn btn--ghost">Our story</a>
+        </div>
+      </div>
+    </div>
+    <div class="hero__scroll" aria-hidden="true"><span>Scroll</span></div>
+  </section>
+
+  <Marquee items={['Community over competition', 'Every stride counts', 'No runner left behind', 'Run · Jog · Walk', 'Run the night']} />
+
+  <!-- MANIFESTO -->
+  <section class="section wrap manifesto">
+    <span class="eyebrow">Who we are</span>
+    <p class="manifesto__text display" data-words>
+      {words.map((w) => <span class:list={['w', hot.has(w) && 'w--hot']}>{w} </span>)}
+    </p>
+    <div class="manifesto__aside" data-fade>
+      <p>
+        Outbound Society is a Cebuano non-profit founded by Roefan Jugalbot in Catarman, Liloan. We design runs that break the norms of high-pressure racing: intentional routes, community spirit, and finish lines worth celebrating.
+      </p>
+      <a href="/about/" class="link">More about us →</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <section class="stats wrap">
+    {
+      stats.map((s, i) => (
+        <div class="stat" data-fade={i * 0.08}>
+          <span class="stat__value display" data-count={s.value}>{s.value}</span>
+          <span class="stat__label">{s.label}</span>
+        </div>
+      ))
+    }
+  </section>
+
+  <!-- NEXT EVENT -->
+  <section class="section next">
+    <div class="wrap next__grid">
+      <div class="next__media">
+        <Photo name={currentEvent.featurePhoto} alt={currentEvent.featurePhotoAlt} sizes="(max-width: 900px) 100vw, 55vw" parallax />
+        <span class="next__tag">{currentEvent.featureTag}</span>
+      </div>
+      <div class="next__info">
+        <span class="eyebrow">Next run · Registration open</span>
+        <SplitHeading lines={currentEvent.headingLines} accentLast />
+        <p class="lede" data-fade>{currentEvent.tagline}</p>
+        <dl class="facts" data-fade>
+          <div><dt>When</dt><dd>{currentEvent.dateLabel}</dd></div>
+          <div><dt>Where</dt><dd>{currentEvent.venue}, {currentEvent.address}</dd></div>
+          <div><dt>Entry</dt><dd>{currentEvent.fee} · medal + meal</dd></div>
+          <div><dt>Distances</dt><dd>Kids 3 km · Adults 5 km</dd></div>
+        </dl>
+        <div class="countdown" data-countdown={currentEvent.startsAt} data-fade aria-label="Countdown to gun start">
+          <div><span data-d>00</span><small>Days</small></div>
+          <div><span data-h>00</span><small>Hrs</small></div>
+          <div><span data-m>00</span><small>Min</small></div>
+          <div><span data-s>00</span><small>Sec</small></div>
+        </div>
+        <div class="next__actions" data-fade>
+          <RegisterButton />
+          <a href="/events/" class="btn btn--ghost">Full details</a>
+        </div>
+        <p class="muted small" data-fade>Registration closes {currentEvent.registrationCloses}.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PAST EVENTS: pinned horizontal scroll -->
+  <section class="past" data-hscroll>
+    <div class="past__track" data-hscroll-track>
+      <div class="past__intro">
+        <span class="eyebrow">What we've done</span>
+        <h2>Past<br /><span class="outline">runs</span></h2>
+        <p class="muted">Four runs, one community. Swipe through the nights that built it.</p>
+      </div>
+      {
+        pastEvents.map((e, i) => (
+          <a href={`/events/#${e.slug}`} class="past__card">
+            <Photo name={e.cover} alt={`${e.name}, ${e.when}`} sizes="(max-width: 900px) 85vw, 34vw" />
+            <div class="past__meta">
+              <span class="past__num">0{pastEvents.length - i}</span>
+              <h3>{e.name}</h3>
+              <span class="muted">{e.when} · {e.where}</span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+  </section>
+
+  <!-- GALLERY collage -->
+  <section class="section wrap gallery">
+    <div class="gallery__head">
+      <SplitHeading lines={['Come as', 'you are.']} accentLast />
+      <p class="lede" data-fade>Dinosaurs, witches, first-timers, grandmas and Strava chasers, all on the same start line.</p>
+    </div>
+    <div class="gallery__grid">
+      {gallery.map((g) => <Photo name={g.name} alt={g.alt} class={g.cls} sizes="(max-width: 900px) 50vw, 33vw" parallax />)}
+    </div>
+    <div class="gallery__word display" data-drift="-1" aria-hidden="true">Every stride counts</div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="section reviews">
+    <div class="wrap">
+      <div class="reviews__head">
+        <span class="eyebrow">5.0 ★ on Google</span>
+        <SplitHeading lines={['Word on', 'the street.']} />
+      </div>
+      <div class="reviews__list">
+        {
+          reviews.map((r, i) => (
+            <figure class="review" data-fade={(i % 2) * 0.1}>
+              <blockquote>“{r.text}”</blockquote>
+              <figcaption>
+                <span class="accent">★★★★★</span> {r.name}
+              </figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* HERO */
+  .hero {
+    position: relative;
+    height: 100svh;
+    min-height: 640px;
+    overflow: hidden;
+    display: flex;
+    align-items: flex-end;
+  }
+  .hero__clips {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+  .hero__clip {
+    position: relative;
+    overflow: hidden;
+    background: var(--bg-2);
+  }
+  .hero__clip video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: saturate(1.08) contrast(1.05);
+  }
+  .hero__shade {
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, rgba(10, 10, 9, 0.55) 0%, rgba(10, 10, 9, 0.05) 30%, rgba(10, 10, 9, 0.35) 60%, rgba(10, 10, 9, 0.96) 100%);
+  }
+  .hero__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    padding-bottom: clamp(40px, 6vw, 80px);
+  }
+  .hero__title {
+    font-size: clamp(88px, 19vw, 360px);
+    line-height: 0.82;
+    margin-top: 18px;
+  }
+  .hero__title em {
+    font-style: normal;
+  }
+  .hero__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 28px;
+    margin-top: 28px;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .hero__scroll {
+    position: absolute;
+    right: var(--gutter);
+    top: 50%;
+    z-index: 2;
+    writing-mode: vertical-rl;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero__scroll::after {
+    content: '';
+    width: 2px;
+    height: 70px;
+    background: linear-gradient(var(--orange), transparent);
+    animation: drip 2s var(--ease) infinite;
+    transform-origin: top;
+  }
+  @keyframes drip {
+    0% { transform: scaleY(0); }
+    50% { transform: scaleY(1); }
+    100% { transform: scaleY(1); opacity: 0; }
+  }
+  @media (max-width: 760px) {
+    .hero__clips {
+      grid-template-columns: 1fr;
+    }
+    .hero__clip--wide {
+      display: none;
+    }
+    .hero__scroll {
+      display: none;
+    }
+  }
+
+  /* MANIFESTO */
+  .manifesto {
+    display: grid;
+    gap: 40px;
+  }
+  .manifesto__text {
+    font-size: clamp(40px, 6.6vw, 118px);
+    line-height: 0.95;
+    margin: 0;
+  }
+  .w--hot {
+    color: var(--fg);
+  }
+  :global(html.js:not(.reduced)) .w--hot {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--fg);
+  }
+  .manifesto__aside {
+    max-width: 520px;
+    margin-left: auto;
+    display: grid;
+    gap: 16px;
+    color: var(--muted);
+  }
+
+  /* STATS */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .stat {
+    padding: 40px 24px 36px 0;
+    display: grid;
+    gap: 10px;
+  }
+  .stat + .stat {
+    border-left: 1px solid var(--line);
+    padding-left: 24px;
+  }
+  .stat__value {
+    font-size: clamp(56px, 7vw, 120px);
+    line-height: 0.9;
+  }
+  .stat__label {
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    max-width: 20ch;
+  }
+  @media (max-width: 860px) {
+    .stats {
+      grid-template-columns: 1fr 1fr;
+    }
+    .stat:nth-child(3) {
+      border-left: 0;
+      padding-left: 0;
+    }
+    .stat:nth-child(n + 3) {
+      border-top: 1px solid var(--line);
+    }
+  }
+
+  /* NEXT EVENT */
+  .next__grid {
+    display: grid;
+    grid-template-columns: 1.15fr 1fr;
+    gap: clamp(32px, 5vw, 96px);
+    align-items: center;
+  }
+  .next__media {
+    position: relative;
+  }
+  .next__media :global(.media) {
+    aspect-ratio: 4 / 5;
+  }
+  .next__tag {
+    position: absolute;
+    left: 16px;
+    bottom: 16px;
+    background: var(--bg);
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .next__info {
+    display: grid;
+    gap: 26px;
+  }
+  .next__info :global(h2) {
+    font-size: clamp(56px, 7.5vw, 132px);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 28px;
+    margin: 0;
+  }
+  .facts dt {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .facts dd {
+    margin: 4px 0 0;
+    font-weight: 600;
+  }
+  .countdown {
+    display: flex;
+    gap: 10px;
+  }
+  .countdown div {
+    flex: 1;
+    border: 1px solid var(--line);
+    padding: 14px 10px 10px;
+    text-align: center;
+  }
+  .countdown span {
+    display: block;
+    font-family: var(--display);
+    font-size: clamp(36px, 4vw, 60px);
+    line-height: 1;
+  }
+  .countdown small {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .next__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .small {
+    font-size: 14px;
+    margin: 0;
+  }
+  @media (max-width: 900px) {
+    .next__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* PAST EVENTS */
+  .past {
+    overflow: hidden;
+  }
+  .past__track {
+    display: flex;
+    align-items: center;
+    gap: clamp(20px, 3vw, 48px);
+    height: 100vh;
+    padding-inline: var(--gutter);
+    width: max-content;
+  }
+  .past__intro {
+    width: min(34vw, 520px);
+    display: grid;
+    gap: 22px;
+    flex: none;
+  }
+  .past__intro h2 {
+    font-size: clamp(80px, 11vw, 200px);
+  }
+  .past__card {
+    flex: none;
+    width: clamp(300px, 34vw, 560px);
+    text-decoration: none;
+    display: grid;
+    gap: 18px;
+  }
+  .past__card :global(.media) {
+    aspect-ratio: 4 / 5;
+  }
+  .past__card :global(img) {
+    transition: transform 1.2s var(--ease), filter 0.6s;
+    filter: grayscale(0.25);
+  }
+  .past__card:hover :global(img) {
+    transform: scale(1.06);
+    filter: grayscale(0);
+  }
+  .past__meta {
+    display: grid;
+    gap: 6px;
+  }
+  .past__num {
+    font-weight: 800;
+    font-size: 13px;
+    color: var(--orange);
+    letter-spacing: 0.14em;
+  }
+  .past__card h3 {
+    transition: color 0.3s;
+  }
+  .past__card:hover h3 {
+    color: var(--orange);
+  }
+  @media (max-width: 899px) {
+    .past {
+      padding-block: 80px;
+    }
+    .past__track {
+      height: auto;
+      width: 100%;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gutter);
+      scrollbar-width: none;
+      padding-bottom: 12px;
+    }
+    .past__track::-webkit-scrollbar {
+      display: none;
+    }
+    .past__intro {
+      width: 78vw;
+    }
+    .past__card {
+      width: 78vw;
+      scroll-snap-align: start;
+    }
+  }
+
+  /* GALLERY */
+  .gallery {
+    overflow: hidden;
+  }
+  .gallery__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 28px;
+    margin-bottom: clamp(40px, 6vw, 90px);
+  }
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: clamp(80px, 9vw, 150px);
+    gap: clamp(10px, 1.4vw, 22px);
+  }
+  .gallery__grid :global(.g1) { grid-column: 1 / span 4; grid-row: span 4; }
+  .gallery__grid :global(.g2) { grid-column: 5 / span 5; grid-row: 2 / span 3; }
+  .gallery__grid :global(.g3) { grid-column: 10 / span 3; grid-row: span 3; }
+  .gallery__grid :global(.g4) { grid-column: 2 / span 5; grid-row: span 3; }
+  .gallery__grid :global(.g5) { grid-column: 7 / span 3; grid-row: span 4; }
+  .gallery__grid :global(.g6) { grid-column: 10 / span 3; grid-row: span 3; }
+  .gallery__word {
+    font-size: clamp(80px, 14vw, 260px);
+    white-space: nowrap;
+    color: transparent;
+    -webkit-text-stroke: 1.5px rgba(243, 239, 231, 0.3);
+    margin-top: clamp(40px, 6vw, 100px);
+  }
+  @media (max-width: 760px) {
+    .gallery__grid {
+      grid-template-columns: 1fr 1fr;
+      grid-auto-rows: 52vw;
+    }
+    .gallery__grid :global(.media) {
+      grid-column: auto !important;
+      grid-row: auto !important;
+    }
+  }
+
+  /* REVIEWS */
+  .reviews__head {
+    display: grid;
+    gap: 20px;
+    margin-bottom: clamp(40px, 6vw, 80px);
+  }
+  .reviews__list {
+    columns: 2 420px;
+    column-gap: clamp(24px, 4vw, 64px);
+  }
+  .review {
+    break-inside: avoid;
+    margin: 0 0 clamp(24px, 4vw, 56px);
+    padding-top: 24px;
+    border-top: 1px solid var(--line);
+  }
+  .review blockquote {
+    margin: 0 0 18px;
+    font-size: clamp(18px, 1.6vw, 24px);
+    line-height: 1.45;
+  }
+  .review figcaption {
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+</style>
