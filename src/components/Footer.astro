@@ -24,6 +24,7 @@ import SplitHeading from './SplitHeading.astro';
     <div class="footer__grid">
       <div class="footer__brand">
         <Image src={logo} alt="Outbound Society logo" width={160} height={160} class="footer__logo" />
+        <p class="footer__name">Outbound<br />Society</p>
         <p class="muted">A Cebuano non-profit bringing communities together through inclusive, meaningful runs.</p>
       </div>
       <div>
@@ -92,6 +93,14 @@ import SplitHeading from './SplitHeading.astro';
   }
   .footer__brand p {
     max-width: 32ch;
+  }
+  .footer__name {
+    font-family: var(--display);
+    text-transform: uppercase;
+    font-size: clamp(28px, 2.4vw, 38px);
+    line-height: 1.05;
+    letter-spacing: 0.03em;
+    margin: 0 0 14px;
   }
   .small {
     font-size: 14px;
