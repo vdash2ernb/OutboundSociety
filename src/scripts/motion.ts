@@ -407,6 +407,13 @@ export async function init() {
   heroVideos();
   await document.fonts?.ready;
   fitText();
+  // Arriving from another page: wait until the orange curtain starts to clear
+  if (html.classList.contains('curtain-on')) {
+    await new Promise<void>((resolve) => {
+      document.addEventListener('os:curtain-open', () => resolve(), { once: true });
+      window.setTimeout(resolve, 2500);
+    });
+  }
   const introOn = html.classList.contains('intro');
   if (!reduced()) heroScroll(introOn ? 2.75 : 0.1);
   await preloader();

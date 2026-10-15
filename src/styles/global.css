@@ -290,17 +290,9 @@ html.js:not(.reduced) .marquee__track {
   animation: none;
 }
 
-/* ── Page transition (Astro view transitions) ── */
-::view-transition-old(root) {
-  animation: 0.45s var(--ease) both vt-out;
-}
+/* ── Page transition: the orange curtain (src/scripts/transitions.ts) does the work,
+   so the browser's own cross-fade is switched off ── */
+::view-transition-old(root),
 ::view-transition-new(root) {
-  animation: 0.7s var(--ease) both vt-in;
-}
-@keyframes vt-out {
-  to { opacity: 0; transform: translateY(-3vh) scale(0.985); }
-}
-@keyframes vt-in {
-  from { clip-path: inset(100% 0 0 0); }
-  to { clip-path: inset(0 0 0 0); }
+  animation: none;
 }

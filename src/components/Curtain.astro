@@ -1,0 +1,67 @@
+---
+// Page-change curtain: orange stripes close over the page, a punchy line for the
+// destination appears, then the stripes clear to reveal the new page.
+// Persists across navigations; animated in src/scripts/transitions.ts.
+---
+
+<div class="curtain" data-curtain transition:persist="curtain" aria-hidden="true">
+  <div class="curtain__bars">
+    {Array.from({ length: 10 }, () => <i></i>)}
+  </div>
+  <div class="curtain__label">
+    <span class="curtain__page" data-curtain-page></span>
+    <span class="curtain__line" data-curtain-line></span>
+  </div>
+</div>
+
+<style>
+  .curtain {
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    pointer-events: none;
+    visibility: hidden;
+  }
+  .curtain.is-active {
+    visibility: visible;
+    pointer-events: all;
+  }
+  .curtain__bars {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: repeat(10, 1fr);
+  }
+  .curtain__bars i {
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    margin-block: -1px;
+  }
+  .curtain__label {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: 14px;
+    padding: var(--gutter);
+    text-align: center;
+    color: #121110;
+  }
+  .curtain__page {
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    opacity: 0;
+  }
+  .curtain__line {
+    font-family: var(--display);
+    text-transform: uppercase;
+    font-size: clamp(52px, min(9vw, 16vh), 150px);
+    line-height: 0.88;
+    max-width: 12ch;
+    opacity: 0;
+  }
+</style>

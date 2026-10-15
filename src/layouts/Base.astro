@@ -5,6 +5,7 @@ import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 import Preloader from '../components/Preloader.astro';
+import Curtain from '../components/Curtain.astro';
 import { site } from '../data/site';
 import ogImage from '../assets/photos/hnr25-group.jpg';
 import { getImage } from 'astro:assets';
@@ -65,6 +66,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     <Preloader />
+    <Curtain />
     <a class="skip" href="#main">Skip to content</a>
     <Nav />
     <main id="main">
@@ -75,6 +77,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <div class="grain" aria-hidden="true"></div>
 
     <script>
+      import '../scripts/transitions';
       import { init, destroy } from '../scripts/motion';
       // The swap replaces <html> attributes, so restore the JS flags before the new page paints.
       document.addEventListener('astro:after-swap', () => {

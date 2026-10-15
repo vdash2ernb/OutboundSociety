@@ -273,6 +273,10 @@ const gallery = [
     margin: 0;
     text-shadow: 0 6px 40px rgba(0, 0, 0, 0.55);
   }
+  /* "NIGHT." keeps the outlined look, drawn in orange */
+  .hero__tag :global(.outline) {
+    -webkit-text-stroke-color: var(--orange);
+  }
   .hero__end {
     position: absolute;
     left: 0;
