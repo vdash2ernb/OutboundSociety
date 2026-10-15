@@ -111,8 +111,8 @@ h3 {
   letter-spacing: 0.005em;
   margin: 0;
 }
-h1 { font-size: clamp(64px, 13vw, 240px); }
-h2 { font-size: clamp(48px, 8.5vw, 150px); }
+h1 { font-size: clamp(56px, min(13vw, 24vh), 240px); }
+h2 { font-size: clamp(44px, min(8.5vw, 17vh), 150px); }
 h3 { font-size: clamp(28px, 3.4vw, 54px); line-height: 0.95; }
 
 .eyebrow {

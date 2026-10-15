@@ -89,8 +89,9 @@ const clips = [
 const vDir = 'public/video';
 fs.mkdirSync(vDir, { recursive: true });
 for (const [name, src, ss, t] of clips) {
-  const base = ['-v', 'error', '-y', '-ss', String(ss), '-t', String(t), '-i', src, '-an', '-vf', 'scale=540:-2,fps=30'];
-  execFileSync(ffmpeg, [...base, '-c:v', 'libx264', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-crf', '27', '-preset', 'slow', '-movflags', '+faststart', `${vDir}/${name}.mp4`]);
-  execFileSync(ffmpeg, ['-v', 'error', '-y', '-ss', String(ss + 1), '-i', src, '-frames:v', '1', '-vf', 'scale=540:-2', '-q:v', '4', `${vDir}/${name}.jpg`]);
+  const fit = 'scale=720:1280:force_original_aspect_ratio=increase,crop=720:1280';
+  const base = ['-v', 'error', '-y', '-ss', String(ss), '-t', String(t), '-i', src, '-an', '-vf', `${fit},fps=30,unsharp=5:5:0.6`];
+  execFileSync(ffmpeg, [...base, '-c:v', 'libx264', '-profile:v', 'high', '-pix_fmt', 'yuv420p', '-crf', '22', '-preset', 'slow', '-movflags', '+faststart', `${vDir}/${name}.mp4`]);
+  execFileSync(ffmpeg, ['-v', 'error', '-y', '-ss', String(ss + 1), '-i', src, '-frames:v', '1', '-vf', fit, '-q:v', '3', `${vDir}/${name}.jpg`]);
   console.log(name, (fs.statSync(`${vDir}/${name}.mp4`).size / 1e6).toFixed(2), 'MB');
 }

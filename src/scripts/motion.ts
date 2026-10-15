@@ -32,9 +32,6 @@ function preloader(): Promise<void> {
     el?.remove();
     return Promise.resolve();
   }
-  try {
-    sessionStorage.setItem('os-intro', '1');
-  } catch {}
   lenis?.stop();
   window.scrollTo(0, 0);
 
@@ -54,10 +51,23 @@ function preloader(): Promise<void> {
       .to(el.querySelectorAll('.pre__ch i'), { y: 0, yPercent: 0, duration: 0.9, stagger: 0.035 }, 0.35)
       .to(counter, { v: 100, duration: 1.7, ease: 'power2.inOut', onUpdate: () => count && (count.textContent = String(Math.round(counter.v))) }, 0)
       .to(el.querySelector('.pre__logo'), { rotate: 360, duration: 1.1, ease: 'power3.inOut' }, 1.15)
-      .to(el.querySelectorAll('.pre__bars i'), { scaleX: 1, duration: 0.55, ease: 'power3.in', stagger: { each: 0.035, from: 'random' } }, 1.75)
+      // Zoom through the brand name as the orange stripes close in
+      .to(el.querySelector('.pre__center'), { scale: 2.4, opacity: 0, duration: 0.8, ease: 'power3.in' }, 1.9)
+      .to(el.querySelector('.pre__foot'), { opacity: 0, duration: 0.3 }, 1.9)
+      .to(el.querySelectorAll('.pre__bars i'), { scaleX: 1, duration: 0.55, ease: 'power3.in', stagger: { each: 0.035, from: 'random' } }, 2.05)
       .set(el.querySelectorAll('.pre__center, .pre__foot'), { autoAlpha: 0 })
       .set(el, { backgroundColor: 'transparent' })
       .to(el.querySelectorAll('.pre__bars i'), { scaleX: 0, transformOrigin: 'right', duration: 0.6, ease: 'power3.out', stagger: { each: 0.035, from: 'random' } });
+
+    // Safety net: never leave a visitor stuck behind the intro (e.g. a throttled background tab)
+    const bail = window.setTimeout(() => tl.progress(1), 5500);
+    tl.eventCallback('onComplete', () => {
+      window.clearTimeout(bail);
+      el.remove();
+      html.classList.remove('intro');
+      lenis?.start();
+      resolve();
+    });
   });
 }
 
@@ -76,7 +86,11 @@ function fitText() {
     els.forEach((el) => {
       el.style.fontSize = '100px';
       const w = el.scrollWidth;
-      if (w) el.style.fontSize = `${(100 * target) / w}px`;
+      if (!w) return;
+      // Fill the width, but never let the brand name eat more than ~1/5 of a short screen
+      const stacked = !!el.closest('.hero__stack');
+      const maxByHeight = (window.innerHeight * (stacked ? 0.13 : 0.2)) / 0.82;
+      el.style.fontSize = `${Math.min((100 * target) / w, maxByHeight)}px`;
     });
   };
   fit();
@@ -95,74 +109,79 @@ function fitText() {
   cleanups.push(() => window.removeEventListener('resize', onResize));
 }
 
-/* ── Hero: words part, video card opens to full screen, scrubbed by scroll ── */
-function heroScroll() {
+/* ── Hero: name + tagline centred; scrolling parts them, opens a video card, then all three clips ── */
+function heroScroll(entranceDelay = 0) {
   const hero = document.querySelector<HTMLElement>('[data-hero]');
   if (!hero) return;
   const media = hero.querySelector<HTMLElement>('[data-hero-media]');
-  const brand = hero.querySelector('[data-hero-brand]');
-  const trio = hero.querySelectorAll('[data-hero-trio] span');
+  const brand = hero.querySelector<HTMLElement>('[data-hero-brand]');
+  const tag = hero.querySelector<HTMLElement>('[data-hero-tag]');
+  const nav = document.querySelector<HTMLElement>('[data-nav]');
   const end = hero.querySelector('[data-hero-end]');
   const shade = hero.querySelector('.hero__shade');
   const vids = hero.querySelectorAll('.hero__vid');
+  if (!media || !brand || !tag) return;
   const mobile = !isDesktop();
 
-  // Entrance once the page is visible
-  gsap.from(hero.querySelectorAll('[data-fit]'), { yPercent: 60, opacity: 0, duration: 1.3, ease: 'expo.out', stagger: 0.08 });
-  gsap.from(media, { '--card-x': '50%', duration: 1.4, ease: 'expo.out', delay: 0.1 });
-  gsap.from(trio, { opacity: 0, y: 30, duration: 1, ease: 'power3.out', stagger: 0.08, delay: 0.4 });
+  // The small header name stays hidden while the giant hero name is on screen.
+  // Set before the intro's stripes open, so nothing flashes and re-animates.
+  nav?.classList.add('hide-name');
+  cleanups.push(() => nav?.classList.remove('hide-name', 'show-name'));
+
+  // Entrance: starts exactly as the intro stripes part (or right away on later visits)
+  gsap.from(hero.querySelectorAll('[data-fit]'), { yPercent: 100, opacity: 0, duration: 1.3, ease: 'expo.out', stagger: 0.08, delay: entranceDelay });
+  gsap.from(tag, { yPercent: 60, opacity: 0, duration: 1.2, ease: 'expo.out', delay: entranceDelay + 0.25 });
+
+  // Where the name and tagline travel to, and the card that opens between them
+  const navH = () => (nav?.offsetHeight ?? 80) + 8;
+  const brandY = () => navH() - brand.offsetTop;
+  const tagY = () => window.innerHeight - 24 - (tag.offsetTop + tag.offsetHeight);
+  const cardT = () => `${((navH() + brand.offsetHeight + 18) / window.innerHeight) * 100}%`;
+  const cardB = () => `${((tag.offsetHeight + 24 + 18) / window.innerHeight) * 100}%`;
+  const cardX = mobile ? '7%' : '35.5%'; // desktop: frames just the middle clip
 
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
     scrollTrigger: {
       trigger: hero,
       start: 'top top',
-      end: mobile ? '+=90%' : '+=140%',
+      end: mobile ? '+=120%' : '+=170%',
       pin: true,
       scrub: mobile ? 0.4 : 0.8,
       anticipatePin: 1,
+      invalidateOnRefresh: true,
+      onUpdate: (self) => nav?.classList.toggle('show-name', self.progress > 0.55),
     },
   });
-  tl.to(media, { '--card-t': '0%', '--card-b': '0%', '--card-x': '0%', duration: 1 }, 0)
-    .to(vids, { scale: 1, duration: 1 }, 0)
-    .to(brand, { yPercent: -60, scale: 1.08, opacity: 0, duration: 0.6 }, 0)
-    .to(trio[0], { xPercent: -40, duration: 0.8 }, 0)
-    .to(trio[2], { xPercent: 40, duration: 0.8 }, 0)
-    .to(trio, { opacity: 0, duration: 0.3 }, 0.55)
-    .to(shade, { opacity: 1, duration: 0.5 }, 0.4)
-    .to(end, { autoAlpha: 1, duration: 0.01 }, 0.75)
-    .from(end ? end.children : [], { y: 40, opacity: 0, duration: 0.25, stagger: 0.06 }, 0.75);
+  tl
+    // 1 — name rises, tagline drops, the card opens between them
+    .to(brand, { y: brandY, duration: 0.4, ease: 'power2.inOut' }, 0)
+    .to(tag, { y: tagY, duration: 0.4, ease: 'power2.inOut' }, 0)
+    .fromTo(media, { '--card-t': '50%', '--card-b': '50%', '--card-x': '50%' }, { '--card-t': cardT, '--card-b': cardB, '--card-x': cardX, duration: 0.4, ease: 'power2.inOut' }, 0)
+    // 2 — card opens to full screen (three clips on desktop), words clear away
+    .to(media, { '--card-t': '0%', '--card-b': '0%', '--card-x': '0%', duration: 0.45, ease: 'power2.in' }, 0.48)
+    .to(vids, { scale: 1, duration: 0.45 }, 0.48)
+    .to(brand, { opacity: 0, yPercent: -40, duration: 0.3 }, 0.5)
+    .to(tag, { opacity: 0, yPercent: 40, duration: 0.3 }, 0.5)
+    .to(shade, { opacity: 1, duration: 0.3 }, 0.7)
+    // 3 — intro copy and buttons
+    .to(end, { autoAlpha: 1, duration: 0.01 }, 0.86)
+    .from(end ? end.children : [], { y: 40, opacity: 0, duration: 0.12, stagger: 0.03 }, 0.86);
 }
 
 function heroVideos() {
-  const vids = [...document.querySelectorAll<HTMLVideoElement>('[data-hero-vid]')];
-  if (!vids.length) return;
-  let i = 0;
-  let visible = true;
-  const play = (v: HTMLVideoElement) => {
-    if (!reduced() && visible) v.play().catch(() => {});
-  };
-  // Cycle through the clips: when one ends, crossfade to the next.
-  const next = () => {
-    const cur = vids[i];
-    i = (i + 1) % vids.length;
-    const nxt = vids[i];
-    nxt.currentTime = 0;
-    play(nxt);
-    nxt.classList.add('is-on');
-    cur.classList.remove('is-on');
-  };
-  vids.forEach((v) => v.addEventListener('ended', next));
+  const hero = document.querySelector<HTMLElement>('[data-hero-media]');
+  if (!hero) return;
+  // Phones only show (and download) the middle clip
+  const vids = [...hero.querySelectorAll<HTMLVideoElement>('[data-hero-vid]')].filter(
+    (v) => v.dataset.heroVid === 'main' || isDesktop()
+  );
+  vids.forEach((v) => v.dataset.heroVid === 'side' && (v.preload = 'auto'));
   const io = new IntersectionObserver(([e]) => {
-    visible = e.isIntersecting;
-    visible ? play(vids[i]) : vids[i].pause();
+    vids.forEach((v) => (e.isIntersecting && !reduced() ? v.play().catch(() => {}) : v.pause()));
   });
-  io.observe(vids[0].parentElement!);
-  play(vids[0]);
-  cleanups.push(() => {
-    io.disconnect();
-    vids.forEach((v) => v.removeEventListener('ended', next));
-  });
+  io.observe(hero);
+  cleanups.push(() => io.disconnect());
 }
 
 function navBehaviour() {
@@ -172,7 +191,10 @@ function navBehaviour() {
   const onScroll = () => {
     const y = window.scrollY;
     nav.classList.toggle('is-scrolled', y > 40);
-    nav.classList.toggle('is-hidden', y > last && y > 300 && !document.documentElement.classList.contains('menu-open'));
+    // Keep the header on screen through the pinned hero so its name can fade in visibly
+    const spacer = document.querySelector<HTMLElement>('[data-hero]')?.parentElement;
+    const heroEnd = spacer?.classList.contains('pin-spacer') ? spacer.offsetHeight : 0;
+    nav.classList.toggle('is-hidden', y > last && y > Math.max(300, heroEnd) && !document.documentElement.classList.contains('menu-open'));
     last = y;
   };
   window.addEventListener('scroll', onScroll, { passive: true });
@@ -385,9 +407,10 @@ export async function init() {
   heroVideos();
   await document.fonts?.ready;
   fitText();
+  const introOn = html.classList.contains('intro');
+  if (!reduced()) heroScroll(introOn ? 2.75 : 0.1);
   await preloader();
   if (!reduced()) {
-    heroScroll();
     reveals();
     horizontalScroll();
     velocityMarquee();
