@@ -23,6 +23,7 @@ export const GET: APIRoute = ({ site: origin }) => {
 - Services: community runs and fitness activations; event management for brand activations and sports gatherings; digital marketing for local wellness events
 
 ## Current event: ${ev.name}
+- Page: ${url(`/events/${ev.slug}/`)}
 - Date: ${ev.dateLabel}; ${ev.schedule.map((s) => `${s.time} ${s.label}`).join('; ')}
 - Venue: ${ev.venue}, ${ev.address}
 - Registration fee: ${ev.fee}; ${ev.included.join('; ')}
@@ -37,7 +38,7 @@ export const GET: APIRoute = ({ site: origin }) => {
 - ${nextUp.blurb}
 
 ## Past events
-${pastEvents.map((e) => `- ${e.name} (${e.when}, ${e.where}): ${e.summary}`).join('\n')}
+${pastEvents.map((e) => `- [${e.fullName}](${url(`/events/${e.slug}/`)}) (${e.when}, ${e.where}): ${e.summary}`).join('\n')}
 
 ## What runners say (Google reviews)
 ${reviews.map((r) => `- "${r.text}" (${r.name})`).join('\n')}
@@ -46,6 +47,8 @@ ${reviews.map((r) => `- "${r.text}" (${r.name})`).join('\n')}
 - [Home](${url('/')}): who we are, next run, past runs, reviews
 - [Events](${url('/events/')}): ${ev.name} details, FAQ, upcoming and past runs
 - [About](${url('/about/')}): mission, non-profit promise, services, founder story
+- [${ev.name}](${url(`/events/${ev.slug}/`)}): full details, schedule, registration and FAQ
+${pastEvents.map((e) => `- [${e.fullName}](${url(`/events/${e.slug}/`)}): story and photos`).join('\n')}
 `;
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
 };

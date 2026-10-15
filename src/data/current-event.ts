@@ -5,9 +5,22 @@
 
 export const currentEvent = {
   name: 'Haunted Night Run 2026',
+  // The run's own page lives at /events/<slug>/
+  slug: 'haunted-night-run-2026',
   // How the name breaks across lines in the big headings
   headingLines: ['Haunted', 'Night Run', '2026'],
   tagline: 'The night is calling. Will you answer?',
+  // For search results and social shares (keep under ~160 characters)
+  description:
+    "Haunted Night Run 2026: Nov 7 at Bakeria Box, Liloan, Cebu. Kids 3 km Trick-or-Treat Run and adults 5 km. ₱180 with medal and meal. Register online.",
+  // A few short paragraphs for the run's page
+  story: [
+    'The Haunted Night Run is back. Our first ever run brought 300+ runners in costume to Bakeria Box on Halloween night 2025. Year two brings a 3 km Trick-or-Treat Run for kids, a 5 km night run for adults, and a whole program before the gun starts.',
+    'Kids collect treats from candy stations run by Liloan businesses along their route. Adults take on the streets of Liloan after dark. Everyone who finishes gets a medal and a post-run meal from The Bakeria, and stays for 100+ raffle prizes and the Best in Costume awards.',
+    'Costumes are optional, fast legs are optional. Walk, jog or run: every finisher counts. And like every Outbound Society run, every peso of your registration goes back into the next one.',
+  ],
+  // Photos from last year's run, shown on this run's page
+  galleryFrom: 'haunted-night-run-2025',
   // ISO date + local start time (Philippine time, UTC+8). Used for the countdown.
   startsAt: '2026-11-07T19:00:00+08:00',
   endsAt: '2026-11-07T23:00:00+08:00', // for search engines' event listings

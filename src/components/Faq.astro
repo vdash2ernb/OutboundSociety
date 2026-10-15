@@ -1,0 +1,86 @@
+---
+// FAQ accordion with the participant declaration.
+import SplitHeading from './SplitHeading.astro';
+import { faqs } from '../data/faqs';
+---
+
+<section class="section wrap faq">
+  <div>
+    <span class="eyebrow">Good to know</span>
+    <SplitHeading lines={['Questions,', 'answered.']} />
+  </div>
+  <div class="faq__list">
+    {
+      faqs.map((f) => (
+        <details class="faq__item">
+          <summary>
+            {f.q}
+            <span aria-hidden="true">+</span>
+          </summary>
+          <p>{f.a}</p>
+        </details>
+      ))
+    }
+    <div class="declaration">
+      <strong>Participant declaration</strong>
+      <p class="muted">
+        By registering, you acknowledge that community running events involve physical activity, confirm that you are medically fit to take part, and agree to follow the safety guidelines set by Outbound Society race marshals along the route.
+      </p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(32px, 6vw, 100px);
+  }
+  .faq__list {
+    border-top: 1px solid var(--line);
+  }
+  .faq__item {
+    border-bottom: 1px solid var(--line);
+  }
+  .faq__item summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    padding-block: 22px;
+    font-weight: 700;
+    font-size: clamp(18px, 1.4vw, 22px);
+  }
+  .faq__item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq__item summary span {
+    color: var(--orange);
+    font-size: 26px;
+    line-height: 1;
+    transition: transform 0.4s var(--ease);
+  }
+  .faq__item[open] summary span {
+    transform: rotate(45deg);
+  }
+  .faq__item p {
+    margin: 0 0 24px;
+    color: var(--muted);
+    max-width: 60ch;
+  }
+  .declaration {
+    margin-top: 36px;
+    padding: 24px;
+    border-left: 3px solid var(--orange);
+    background: var(--bg-2);
+  }
+  .declaration p {
+    margin: 8px 0 0;
+  }
+  @media (max-width: 900px) {
+    .faq {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -140,7 +140,7 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
         </div>
         <div class="next__actions" data-fade>
           <RegisterButton />
-          <a href={url('/events/')} class="btn btn--ghost">Full details</a>
+          <a href={url(`/events/${currentEvent.slug}/`)} class="btn btn--ghost">Full details</a>
         </div>
         <p class="muted small" data-fade>Registration closes {currentEvent.registrationCloses}.</p>
       </div>
@@ -157,7 +157,7 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
       </div>
       {
         pastEvents.map((e, i) => (
-          <a href={url(`/events/#${e.slug}`)} class="past__card">
+          <a href={url(`/events/${e.slug}/`)} class="past__card">
             <Photo name={e.cover} alt={`${e.name}, ${e.when}`} sizes="(max-width: 900px) 85vw, 34vw" />
             <div class="past__meta">
               <h3>{e.name}</h3>

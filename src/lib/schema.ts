@@ -1,7 +1,7 @@
 // Structured data (schema.org JSON-LD) for search engines and AI answer engines.
 import { site } from '../data/site';
 import { currentEvent as ev, nextUp } from '../data/current-event';
-import { pastEvents } from '../data/past-events';
+import { pastEvents, type PastEvent } from '../data/past-events';
 
 type Abs = (path: string) => string;
 
@@ -57,7 +57,7 @@ export function website(abs: Abs) {
 export function currentEventSchema(abs: Abs, images: string[]) {
   return {
     '@type': 'Event',
-    '@id': abs('/events/#current'),
+    '@id': abs(`/events/${ev.slug}/#event`),
     name: ev.name,
     description: `${ev.tagline} ${ev.categories.map((c) => `${c.name}: ${c.detail}.`).join(' ')} ${ev.fee} includes ${ev.included.slice(0, 2).join(' and ').toLowerCase()}. ${ev.notes}`,
     startDate: ev.startsAt,
@@ -65,7 +65,7 @@ export function currentEventSchema(abs: Abs, images: string[]) {
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     image: images,
-    url: abs('/events/'),
+    url: abs(`/events/${ev.slug}/`),
     location: {
       '@type': 'Place',
       name: ev.venue,
@@ -106,19 +106,25 @@ export function nextUpSchema(abs: Abs, image: string) {
   };
 }
 
-export function pastEventSchemas(abs: Abs, imageFor: (name: string) => string) {
-  return pastEvents.map((e) => ({
+/** A run that already happened, described on its own page */
+export function pastEventSchema(abs: Abs, e: PastEvent, images: string[]) {
+  return {
     '@type': 'Event',
-    name: e.name,
+    '@id': abs(`/events/${e.slug}/#event`),
+    name: e.fullName,
     description: e.summary,
     startDate: e.date,
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
-    image: [imageFor(e.cover)],
-    url: abs(`/events/#${e.slug}`),
+    image: images,
+    url: abs(`/events/${e.slug}/`),
     location: { '@type': 'Place', name: e.where, address: { '@type': 'PostalAddress', addressLocality: 'Liloan', addressRegion: 'Cebu', addressCountry: 'PH' } },
     organizer: orgRef(abs),
-  }));
+  };
+}
+
+export function pastEventSchemas(abs: Abs, imageFor: (name: string) => string) {
+  return pastEvents.map((e) => pastEventSchema(abs, e, [imageFor(e.cover)]));
 }
 
 export function faqSchema(faqs: { q: string; a: string }[]) {

@@ -6,6 +6,8 @@ const lines: Record<string, { page: string; line: string }> = {
   '': { page: 'Home', line: 'Run the night.' },
   events: { page: 'Events', line: 'See you at the start line.' },
   about: { page: 'About', line: 'No runner left behind.' },
+  // Any single run's page: /events/<slug>/
+  run: { page: 'Race night', line: 'Every stride counts.' },
 };
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
@@ -24,7 +26,8 @@ const parts = () => {
 function cover(to: URL) {
   const c = parts();
   if (!c) return Promise.resolve();
-  const key = to.pathname.replace(base, '').split('/').filter(Boolean)[0] ?? '';
+  const segs = to.pathname.replace(base, '').split('/').filter(Boolean);
+  const key = segs[0] === 'events' && segs[1] ? 'run' : (segs[0] ?? '');
   const copy = lines[key] ?? { page: 'Outbound Society', line: 'Keep moving.' };
   c.page.textContent = copy.page;
   c.line.textContent = copy.line;

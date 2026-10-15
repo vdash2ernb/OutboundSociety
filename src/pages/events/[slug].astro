@@ -1,0 +1,366 @@
+---
+// One page per run: /events/<slug>/. The current run gets full details, Register and FAQ;
+// past runs get their story and photo gallery. Everything comes from the two data files.
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Photo from '../../components/Photo.astro';
+import SplitHeading from '../../components/SplitHeading.astro';
+import Marquee from '../../components/Marquee.astro';
+import RegisterButton from '../../components/RegisterButton.astro';
+import KeyFacts from '../../components/KeyFacts.astro';
+import EventDetails from '../../components/EventDetails.astro';
+import Faq from '../../components/Faq.astro';
+import { currentEvent as ev } from '../../data/current-event';
+import { pastEvents, type PastEvent } from '../../data/past-events';
+import { faqs } from '../../data/faqs';
+import { site } from '../../data/site';
+import { currentEventSchema, pastEventSchema, faqSchema, breadcrumbs } from '../../lib/schema';
+import { photoUrl } from '../../lib/photo-url';
+import { url } from '../../lib/url';
+
+export const getStaticPaths = (() => [
+  { params: { slug: ev.slug }, props: { past: undefined } },
+  ...pastEvents.map((past) => ({ params: { slug: past.slug }, props: { past } })),
+]) satisfies GetStaticPaths;
+
+const { past } = Astro.props as { past?: PastEvent };
+const isCurrent = !past;
+const dateLabel = (iso: string) =>
+  new Date(`${iso}T12:00:00+08:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
+
+// Last year's photos stand in for the current run's gallery until race night
+const galleryRun = past ?? pastEvents.find((e) => e.slug === ev.galleryFrom)!;
+const run = {
+  slug: past?.slug ?? ev.slug,
+  name: past?.fullName ?? ev.name,
+  headingLines: past?.headingLines ?? ev.headingLines,
+  description: past?.description ?? ev.description,
+  lede: past?.summary ?? `${ev.tagline} Get your crew ready for a night of running, prizes, surprises and a little bit of fright.`,
+  story: past?.story ?? ev.story,
+  date: past ? dateLabel(past.date) : ev.dateLabel,
+  hero: past?.cover ?? ev.heroPhoto,
+  social: past?.cover ?? ev.featurePhoto,
+  gallery: galleryRun.gallery,
+  galleryAlt: `${galleryRun.fullName}, a community run in Liloan, Cebu`,
+};
+
+const abs = (p: string) => new URL(p, Astro.site).toString();
+const path = `/events/${run.slug}/`;
+const schema = past
+  ? pastEventSchema(abs, past, await Promise.all([past.cover, ...past.gallery.slice(0, 2)].map((n) => photoUrl(n, Astro.site))))
+  : currentEventSchema(abs, await Promise.all([ev.poster, ev.heroPhoto].map((n) => photoUrl(n, Astro.site))));
+
+// The other runs, newest first, for "more runs" links
+const others = [
+  ...(isCurrent ? [] : [{ slug: ev.slug, name: ev.name, when: `${ev.dateLabel} · Open now`, cover: ev.poster }]),
+  ...pastEvents.filter((e) => e.slug !== run.slug).map((e) => ({ slug: e.slug, name: e.fullName, when: `${e.when} · ${e.where}`, cover: e.cover })),
+];
+---
+
+<Base
+  title={`${run.name} · Liloan, Cebu | ${site.name}`}
+  description={run.description}
+  image={run.social}
+  imageAlt={`${run.name}, a community run by ${site.name} in Liloan, Cebu`}
+  schema={[
+    schema,
+    ...(isCurrent ? [faqSchema(faqs)] : []),
+    breadcrumbs(abs, [
+      { name: 'Events', path: '/events/' },
+      { name: run.name, path },
+    ]),
+  ]}
+>
+  <!-- HEADER -->
+  <section class:list={['rhero', { 'rhero--past': !isCurrent }]}>
+    <div class="rhero__bg">
+      <Photo name={run.hero} alt="" sizes="100vw" loading="eager" parallax />
+    </div>
+    <div class="wrap rhero__content">
+      <nav class="crumbs" aria-label="Breadcrumb">
+        <a href={url('/')}>Home</a><span aria-hidden="true">/</span><a href={url('/events/')}>Events</a><span aria-hidden="true">/</span><span aria-current="page">{run.name}</span>
+      </nav>
+      <span class="eyebrow">{isCurrent ? `Now open · ${run.date}` : `Past run · ${run.date}`}</span>
+      <SplitHeading as="h1" lines={run.headingLines} accentLast />
+      <p class="lede">{run.lede}</p>
+      <div class="rhero__actions">
+        {
+          isCurrent ? (
+            <>
+              <RegisterButton label={`Register · ${ev.fee}`} />
+              <a href="#details" class="btn btn--ghost">See details ↓</a>
+            </>
+          ) : (
+            <>
+              <a href="#photos" class="btn btn--ghost">See the photos ↓</a>
+              <a href={url(`/events/${ev.slug}/`)} class="btn btn--ghost">Next: {ev.name} →</a>
+            </>
+          )
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- KEY FACTS -->
+  <KeyFacts
+    id="details"
+    items={
+      isCurrent
+        ? [
+            { label: 'Date', value: ev.dateLabel },
+            { label: 'Venue', value: ev.venue, href: ev.mapUrl, note: ev.address },
+            { label: 'Entry', value: ev.fee, note: 'Medal + post-run meal' },
+            { label: 'Register by', value: ev.registrationCloses },
+          ]
+        : [
+            { label: 'Date', value: run.date },
+            { label: 'Organized by', value: site.name, note: 'Non-profit community runs' },
+            // Last, so a long route name gets the full row on phones
+            { label: 'Where', value: past!.where.split(',')[0], note: past!.where.includes(',') ? `${past!.where.split(',').slice(1).join(',').trim()}, Cebu` : 'Liloan, Cebu' },
+          ]
+    }
+  />
+
+  <!-- STORY -->
+  <section class="section wrap story">
+    <div>
+      <span class="eyebrow">{isCurrent ? 'The run' : 'The story'}</span>
+      <SplitHeading lines={isCurrent ? ['Run the', 'night.'] : ['How the', 'night went.']} />
+    </div>
+    <div class="story__text">
+      {run.story.map((para, i) => <p class:list={[i === 0 ? 'lede' : 'muted']} data-fade>{para}</p>)}
+    </div>
+  </section>
+
+  {
+    isCurrent && (
+      <>
+        <EventDetails />
+        <Marquee items={['Thank you to our sponsors', ...ev.sponsors]} />
+        <Faq />
+      </>
+    )
+  }
+
+  <!-- GALLERY -->
+  <section class="section wrap gallery" id="photos">
+    <div class="gallery__head">
+      <span class="eyebrow">{isCurrent ? `Last year · ${galleryRun.when}` : 'Photos'}</span>
+      <SplitHeading lines={isCurrent ? ['Last year', 'looked like this.'] : ['From the', 'start line.']} accentLast />
+      {
+        isCurrent && (
+          <a class="link" href={url(`/events/${galleryRun.slug}/`)}>
+            The {galleryRun.fullName} story →
+          </a>
+        )
+      }
+    </div>
+    <div class="gallery__grid">
+      {run.gallery.map((p, i) => <Photo name={p} alt={`${run.galleryAlt}, photo ${i + 1}`} sizes="(max-width: 700px) 50vw, 33vw" />)}
+    </div>
+    <p class="gallery__more muted" data-fade>
+      More photos and race-day videos on our <a class="link" href={site.facebook} target="_blank" rel="noopener">Facebook page</a>.
+    </p>
+  </section>
+
+  <!-- CTA / MORE RUNS -->
+  <section class="section more">
+    <div class="wrap">
+      <span class="eyebrow">{isCurrent ? 'Runs we have already made' : 'More runs'}</span>
+      <div class="more__grid">
+        {
+          others.map((o) => (
+            <a href={url(`/events/${o.slug}/`)} class="more__card">
+              <Photo name={o.cover} alt={o.name} sizes="(max-width: 700px) 100vw, 25vw" />
+              <h3>{o.name}</h3>
+              <span class="muted">{o.when}</span>
+            </a>
+          ))
+        }
+      </div>
+      <div class="more__actions">
+        {isCurrent ? <RegisterButton label={`Register · ${ev.fee}`} /> : <a href={url(`/events/${ev.slug}/`)} class="btn btn--cta" data-magnetic>Join {ev.name} <span class="arrow" aria-hidden="true">→</span></a>}
+        <a href={url('/events/')} class="btn btn--ghost">All events</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .rhero {
+    position: relative;
+    min-height: 100svh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .rhero__bg {
+    position: absolute;
+    inset: 0;
+  }
+  .rhero__bg :global(.media) {
+    height: 100%;
+  }
+  .rhero__bg :global(img) {
+    object-position: 50% 60%;
+  }
+  .rhero__bg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(10, 10, 9, 0.6), rgba(10, 10, 9, 0.35) 40%, rgba(10, 10, 9, 0.97));
+  }
+  .rhero--past .rhero__bg::after {
+    background: linear-gradient(180deg, rgba(10, 10, 9, 0.7), rgba(10, 10, 9, 0.45) 40%, rgba(10, 10, 9, 0.97));
+  }
+  .rhero__content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    display: grid;
+    gap: 24px;
+    padding-top: 120px;
+    padding-bottom: clamp(48px, 7vw, 100px);
+  }
+  .rhero__content :global(h1) {
+    font-size: clamp(56px, min(12vw, 16vh), 220px);
+    line-height: 0.84;
+  }
+  /* The year keeps its orange outline, with a subtle 15% fill */
+  .rhero__content :global(h1 .outline) {
+    color: rgba(255, 90, 26, 0.15);
+  }
+  .rhero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .crumbs a {
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .crumbs a:hover {
+    color: var(--orange);
+  }
+  .crumbs [aria-current] {
+    color: var(--fg);
+  }
+
+  .story {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: clamp(32px, 6vw, 100px);
+    align-items: start;
+  }
+  .story__text {
+    display: grid;
+    gap: 20px;
+  }
+  .story__text p {
+    margin: 0;
+    max-width: 60ch;
+  }
+  .story__text .muted {
+    font-size: clamp(16px, 1.2vw, 19px);
+    line-height: 1.6;
+  }
+  .story__text .lede {
+    max-width: 44ch;
+  }
+
+  .gallery {
+    padding-top: 0;
+  }
+  .gallery__head {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+    margin-bottom: clamp(32px, 5vw, 72px);
+  }
+  .gallery__head .link {
+    font-weight: 700;
+  }
+  .gallery__grid {
+    columns: 3;
+    column-gap: 10px;
+  }
+  .gallery__grid :global(.media) {
+    break-inside: avoid;
+    margin-bottom: 10px;
+  }
+  .gallery__grid :global(img) {
+    height: auto;
+  }
+  .gallery__more {
+    margin: 32px 0 0;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+  }
+
+  .more {
+    background: var(--bg-2);
+  }
+  .more__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-block: 32px 48px;
+  }
+  .more__card {
+    display: grid;
+    gap: 10px;
+    align-content: start;
+    text-decoration: none;
+  }
+  .more__card :global(.media) {
+    aspect-ratio: 4 / 5;
+  }
+  .more__card h3 {
+    font-size: clamp(26px, 2.4vw, 38px);
+    transition: color 0.3s;
+  }
+  .more__card:hover h3 {
+    color: var(--orange);
+  }
+  .more__card span {
+    font-size: 14px;
+  }
+  .more__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (max-width: 900px) {
+    .story {
+      grid-template-columns: 1fr;
+    }
+    .more__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 700px) {
+    .gallery__grid {
+      columns: 2;
+    }
+  }
+  @media (max-width: 480px) {
+    .rhero__actions .btn,
+    .more__actions .btn {
+      white-space: normal;
+      height: auto;
+      min-height: var(--h);
+      padding-block: 14px;
+    }
+  }
+</style>
