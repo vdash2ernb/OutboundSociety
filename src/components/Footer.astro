@@ -28,17 +28,17 @@ import SplitHeading from './SplitHeading.astro';
         <p class="muted">A Cebuano non-profit bringing communities together through inclusive, meaningful runs.</p>
       </div>
       <div>
-        <h4>Visit</h4>
+        <h2>Visit</h2>
         <p><a class="link" href={site.maps} target="_blank" rel="noopener">{site.address}</a></p>
       </div>
       <div>
-        <h4>Talk to us</h4>
+        <h2>Talk to us</h2>
         <p><a class="link" href={site.phoneHref}>{site.phone}</a></p>
         <p><a class="link" href={site.facebook} target="_blank" rel="noopener">facebook.com/OutboundSociety</a></p>
         <p class="muted small">Facebook is the fastest way to reach us about runs and schedules.</p>
       </div>
       <div>
-        <h4>Explore</h4>
+        <h2>Explore</h2>
         {nav.map((item) => <p><a class="link" href={url(item.href)}>{item.label}</a></p>)}
       </div>
     </div>
@@ -75,7 +75,11 @@ import SplitHeading from './SplitHeading.astro';
     gap: 40px;
     padding-block: 56px;
   }
-  .footer__grid h4 {
+  /* Small labels, but h2 so heading levels don't skip after the page content */
+  .footer__grid h2 {
+    font-family: var(--body);
+    font-weight: 700;
+    line-height: normal;
     font-size: 12px;
     letter-spacing: 0.18em;
     text-transform: uppercase;

@@ -6,6 +6,8 @@ import { currentEvent as ev } from '../data/current-event';
 ---
 
 <section class="section wrap details">
+  <!-- Keeps heading levels in order (h1 → h2 → h3) for screen readers -->
+  <h2 class="sr-only">{ev.name} details</h2>
   <div class="details__poster">
     <Photo name={ev.poster} alt={`${ev.name} poster`} sizes="(max-width: 900px) 100vw, 40vw" />
   </div>
@@ -42,6 +44,14 @@ import { currentEvent as ev } from '../data/current-event';
 </section>
 
 <style>
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
   .details {
     display: grid;
     grid-template-columns: 0.8fr 1fr;
