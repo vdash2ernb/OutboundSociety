@@ -1,21 +1,22 @@
 ---
+import { url } from '../lib/url';
 import { Image } from 'astro:assets';
 import logo from '../assets/logo-circle.webp';
 import { nav } from '../data/site';
 import RegisterButton from './RegisterButton.astro';
 
 const path = Astro.url.pathname;
-const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+const isActive = (href: string) => (href === '/' ? path === url('/') : path.startsWith(url(href)));
 ---
 
 <header class="nav" data-nav>
-  <a href="/" class="nav__logo" aria-label="Outbound Society home">
+  <a href={url('/')} class="nav__logo" aria-label="Outbound Society home">
     <Image src={logo} alt="Outbound Society" width={112} height={112} loading="eager" />
   </a>
   <nav class="nav__links" aria-label="Main">
     {
       nav.map((item) => (
-        <a href={item.href} class:list={['nav__link', isActive(item.href) && 'is-active']} aria-current={isActive(item.href) ? 'page' : undefined}>
+        <a href={url(item.href)} class:list={['nav__link', isActive(item.href) && 'is-active']} aria-current={isActive(item.href) ? 'page' : undefined}>
           {item.label}
         </a>
       ))
@@ -33,7 +34,7 @@ const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWit
 <div class="menu" id="menu" data-menu hidden>
   <nav class="menu__links" aria-label="Mobile">
     {nav.map((item, i) => (
-      <a href={item.href} class="menu__link" style={`--i:${i}`}>
+      <a href={url(item.href)} class="menu__link" style={`--i:${i}`}>
         <span>0{i + 1}</span>{item.label}
       </a>
     ))}

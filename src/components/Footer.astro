@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/url';
 import { Image } from 'astro:assets';
 import logo from '../assets/logo-circle.webp';
 import { site, nav } from '../data/site';
@@ -37,7 +38,7 @@ import SplitHeading from './SplitHeading.astro';
       </div>
       <div>
         <h4>Explore</h4>
-        {nav.map((item) => <p><a class="link" href={item.href}>{item.label}</a></p>)}
+        {nav.map((item) => <p><a class="link" href={url(item.href)}>{item.label}</a></p>)}
       </div>
     </div>
 

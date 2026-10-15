@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/url';
 import Base from '../layouts/Base.astro';
 import Photo from '../components/Photo.astro';
 import SplitHeading from '../components/SplitHeading.astro';
@@ -14,9 +15,9 @@ const words = manifesto.split(' ');
 const hot = new Set(['podiums.', 'show', 'up:', 'kids', 'costumes,']);
 
 const clips = [
-  { src: '/video/hero-start.mp4', poster: '/video/hero-start.jpg', label: "Runners leaving the start line at Cielo's Happy Pace" },
-  { src: '/video/hero-bridge.mp4', poster: '/video/hero-bridge.jpg', label: 'Night runners crossing Liloan Bridge at Heart & Sole' },
-  { src: '/video/hero-costumes.mp4', poster: '/video/hero-costumes.jpg', label: 'Costumed runners at the Haunted Night Run' },
+  { src: url('/video/hero-start.mp4'), poster: url('/video/hero-start.jpg'), label: "Runners leaving the start line at Cielo's Happy Pace" },
+  { src: url('/video/hero-bridge.mp4'), poster: url('/video/hero-bridge.jpg'), label: 'Night runners crossing Liloan Bridge at Heart & Sole' },
+  { src: url('/video/hero-costumes.mp4'), poster: url('/video/hero-costumes.jpg'), label: 'Costumed runners at the Haunted Night Run' },
 ];
 
 const gallery = [
@@ -54,7 +55,7 @@ const gallery = [
         </p>
         <div class="hero__actions" data-hero-fade>
           <RegisterButton label={`Join ${currentEvent.name}`} />
-          <a href="/about/" class="btn btn--ghost">Our story</a>
+          <a href={url('/about/')} class="btn btn--ghost">Our story</a>
         </div>
       </div>
     </div>
@@ -73,7 +74,7 @@ const gallery = [
       <p>
         Outbound Society is a Cebuano non-profit founded by Roefan Jugalbot in Catarman, Liloan. We design runs that break the norms of high-pressure racing: intentional routes, community spirit, and finish lines worth celebrating.
       </p>
-      <a href="/about/" class="link">More about us →</a>
+      <a href={url('/about/')} class="link">More about us →</a>
     </div>
   </section>
 
@@ -114,7 +115,7 @@ const gallery = [
         </div>
         <div class="next__actions" data-fade>
           <RegisterButton />
-          <a href="/events/" class="btn btn--ghost">Full details</a>
+          <a href={url('/events/')} class="btn btn--ghost">Full details</a>
         </div>
         <p class="muted small" data-fade>Registration closes {currentEvent.registrationCloses}.</p>
       </div>
@@ -131,7 +132,7 @@ const gallery = [
       </div>
       {
         pastEvents.map((e, i) => (
-          <a href={`/events/#${e.slug}`} class="past__card">
+          <a href={url(`/events/#${e.slug}`)} class="past__card">
             <Photo name={e.cover} alt={`${e.name}, ${e.when}`} sizes="(max-width: 900px) 85vw, 34vw" />
             <div class="past__meta">
               <span class="past__num">0{pastEvents.length - i}</span>

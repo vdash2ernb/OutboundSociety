@@ -1,4 +1,5 @@
 ---
+import { url } from '../lib/url';
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
@@ -25,8 +26,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.png" type="image/png" />
-    <link rel="apple-touch-icon" href="/favicon.png" />
+    <link rel="icon" href={url('/favicon.png')} type="image/png" />
+    <link rel="apple-touch-icon" href={url('/favicon.png')} />
     <meta name="theme-color" content="#0a0a09" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={fullTitle} />
