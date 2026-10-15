@@ -120,13 +120,15 @@ import SplitHeading from './SplitHeading.astro';
   .footer__giant {
     font-family: var(--display);
     text-transform: uppercase;
-    font-size: 27vw;
+    /* sized so the whole word fits the width with a small margin each side */
+    font-size: 25vw;
     line-height: 0.75;
     text-align: center;
     color: transparent;
     -webkit-text-stroke: 1px rgba(255, 90, 26, 0.3);
-    margin-top: 24px;
-    margin-bottom: -2vw;
+    /* glyphs overhang the tight line box; em margins keep them clear of both edges */
+    margin-top: 0.12em;
+    margin-bottom: 0.1em;
     white-space: nowrap;
     user-select: none;
   }
