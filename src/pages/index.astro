@@ -8,6 +8,8 @@ import RegisterButton from '../components/RegisterButton.astro';
 import { currentEvent } from '../data/current-event';
 import { pastEvents, stats } from '../data/past-events';
 import { reviews } from '../data/site';
+import { currentEventSchema } from '../lib/schema';
+import { photoUrl } from '../lib/photo-url';
 
 const manifesto =
   "We're not here for podiums. We're here for the people who show up: first-timers, walkers, kids in costumes, and every runner in between.";
@@ -28,9 +30,14 @@ const gallery = [
   { name: 'cielo26-dad', alt: 'A father and daughter after the run', cls: 'g5' },
   { name: 'hnr25-queen', alt: 'A runner dressed as a queen at the Haunted Night Run', cls: 'g6' },
 ];
+const abs = (p: string) => new URL(p, Astro.site).toString();
+const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPhoto].map((n) => photoUrl(n, Astro.site)));
 ---
 
-<Base>
+<Base
+  description={`Inclusive community fun runs in Liloan, Cebu for every pace: night runs, costume runs and family runs from a Cebuano non-profit. Next up: ${currentEvent.name}, ${currentEvent.dateLabel}.`}
+  schema={[currentEventSchema(abs, eventImages)]}
+>
   <!-- HERO: brand name parts, video card grows to full screen as you scroll -->
   <section class="hero" data-hero>
     <div class="hero__stage">

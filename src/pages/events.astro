@@ -7,6 +7,8 @@ import RegisterButton from '../components/RegisterButton.astro';
 import { currentEvent as ev, nextUp } from '../data/current-event';
 import { pastEvents } from '../data/past-events';
 import { site } from '../data/site';
+import { currentEventSchema, nextUpSchema, pastEventSchemas, faqSchema, breadcrumbs } from '../lib/schema';
+import { photoUrl } from '../lib/photo-url';
 
 const faqs = [
   {
@@ -34,9 +36,28 @@ const faqs = [
     a: 'Outbound Society is a non-profit. Every peso goes back into organizing the next run: medals, meals, marshals and hydration.',
   },
 ];
+
+const abs = (p: string) => new URL(p, Astro.site).toString();
+const eventImages = await Promise.all([ev.poster, ev.heroPhoto].map((n) => photoUrl(n, Astro.site)));
+const nextUpImage = await photoUrl(nextUp.poster, Astro.site);
+const pastImages = Object.fromEntries(
+  await Promise.all(pastEvents.map(async (e) => [e.cover, await photoUrl(e.cover, Astro.site)] as const))
+);
 ---
 
-<Base title="Events" description={`${ev.name}: ${ev.dateLabel} at ${ev.venue}, ${ev.address}. ${ev.fee} with medal and post-run meal. Register now.`}>
+<Base
+  title={`${ev.name} · Liloan Fun Runs | ${site.name}`}
+  description={`${ev.name} is on ${ev.dateLabel} at ${ev.venue}, ${ev.address}. ${ev.fee} includes a finisher's medal and post-run meal. Kids 3 km and adults 5 km. Register online now.`}
+  image={ev.featurePhoto}
+  imageAlt={`${ev.name}, a community night run in Liloan, Cebu`}
+  schema={[
+    currentEventSchema(abs, eventImages),
+    nextUpSchema(abs, nextUpImage),
+    ...pastEventSchemas(abs, (n) => pastImages[n]),
+    faqSchema(faqs),
+    breadcrumbs(abs, [{ name: 'Events', path: '/events/' }]),
+  ]}
+>
   <!-- HEADER -->
   <section class="ehero">
     <div class="ehero__bg">

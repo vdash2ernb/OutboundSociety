@@ -2,6 +2,7 @@
 export const pastEvents = [
   {
     slug: 'cielos-happy-pace-2026',
+    date: '2026-08-29', // from the event posters
     name: "Cielo's Happy Pace",
     when: 'August 2026',
     where: 'BIG APPLE by the bay, Liloan',
@@ -12,6 +13,7 @@ export const pastEvents = [
   },
   {
     slug: 'roes-birthday-run-2026',
+    date: '2026-05-23', // from the event posters
     name: "Roe's Birthday Run",
     when: 'May 2026',
     where: 'Catarman, Liloan',
@@ -22,6 +24,7 @@ export const pastEvents = [
   },
   {
     slug: 'heart-and-sole-2026',
+    date: '2026-02-14', // from the event posters
     name: 'Heart & Sole',
     when: 'February 2026',
     where: 'Liloan Bridge to Bagacay Point Lighthouse',
@@ -32,6 +35,7 @@ export const pastEvents = [
   },
   {
     slug: 'haunted-night-run-2025',
+    date: '2025-10-31', // from the event posters
     name: 'Haunted Night Run',
     when: 'October 2025',
     where: 'Bakeria Box, Liloan',

@@ -10,6 +10,9 @@ export const currentEvent = {
   tagline: 'The night is calling. Will you answer?',
   // ISO date + local start time (Philippine time, UTC+8). Used for the countdown.
   startsAt: '2026-11-07T19:00:00+08:00',
+  endsAt: '2026-11-07T23:00:00+08:00', // for search engines' event listings
+  registrationOpens: '2026-09-08T00:00:00+08:00',
+  registrationClosesAt: '2026-10-28T23:59:00+08:00',
   dateLabel: 'November 7, 2026',
   venue: 'Bakeria Box',
   address: 'Bajac, Liloan, Cebu',
@@ -83,6 +86,7 @@ export const currentEvent = {
 export const nextUp = {
   name: 'Pit Señor Fiesta Run',
   dateLabel: 'January 3, 2027',
+  date: '2027-01-03',
   place: 'Sitio Suba, Poblacion, Liloan, Cebu',
   blurb:
     'Start 2027 moving. Every registration helps raise funds to replace the ceiling of the Señor Santo Niño Chapel. Raffle prizes and cash rewards for top finishers.',

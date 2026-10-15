@@ -4,6 +4,7 @@ import Photo from '../components/Photo.astro';
 import SplitHeading from '../components/SplitHeading.astro';
 import Marquee from '../components/Marquee.astro';
 import { site } from '../data/site';
+import { breadcrumbs } from '../lib/schema';
 
 const services = [
   {
@@ -29,9 +30,20 @@ const values = [
   { k: 'Safe', v: 'Marshals, hydration stations, kid-only routes and clear briefings before every gun start.' },
   { k: 'Non-profit', v: 'Every peso we earn goes straight back into organizing the next run and growing the community.' },
 ];
+
+const abs = (p: string) => new URL(p, Astro.site).toString();
 ---
 
-<Base title="About" description="Outbound Society is a Cebuano non-profit event organizer founded by Roefan Jugalbot in Catarman, Liloan. Running for a better tomorrow.">
+<Base
+  title={`About ${site.name} | Running Community in Liloan, Cebu`}
+  description="Outbound Society is a Cebuano non-profit running community and event organizer founded by Roefan Jugalbot in Catarman, Liloan. Inclusive runs, event management and digital marketing across Cebu North."
+  image="hnr25-crew"
+  imageAlt="Outbound Society runners with their medals in Liloan, Cebu"
+  schema={[
+    { '@type': 'AboutPage', '@id': abs('/about/'), url: abs('/about/'), name: `About ${site.name}`, about: { '@id': abs('/#org') } },
+    breadcrumbs(abs, [{ name: 'About', path: '/about/' }]),
+  ]}
+>
   <section class="ahero wrap">
     <span class="eyebrow">About Outbound Society</span>
     <SplitHeading as="h1" lines={['Running for', 'a better', 'tomorrow.']} accentLast />

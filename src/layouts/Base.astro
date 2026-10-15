@@ -7,61 +7,83 @@ import Footer from '../components/Footer.astro';
 import Preloader from '../components/Preloader.astro';
 import Curtain from '../components/Curtain.astro';
 import { site } from '../data/site';
-import ogImage from '../assets/photos/hnr25-group.jpg';
+import logoImg from '../assets/logo-circle.webp';
 import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { organization, website } from '../lib/schema';
 
 interface Props {
+  /** Full <title>: lead with what people search for */
   title?: string;
   description?: string;
+  /** Social-share photo: a file name in src/assets/photos */
+  image?: string;
+  imageAlt?: string;
+  /** Extra schema.org objects for this page (events, FAQ, breadcrumbs) */
+  schema?: object[];
+  noindex?: boolean;
 }
-const { title, description = site.description } = Astro.props;
-const fullTitle = title ? `${title} · ${site.name}` : `${site.name}: Community runs in Liloan, Cebu`;
-const og = await getImage({ src: ogImage, width: 1200, height: 630, format: 'jpg', fit: 'cover' });
+const {
+  title = `${site.name} | Community Fun Runs in Liloan, Cebu`,
+  description = site.description,
+  image = 'hnr25-group',
+  imageAlt = 'Runners at an Outbound Society community night run in Liloan, Cebu',
+  schema = [],
+  noindex = false,
+} = Astro.props;
+
+const photos = import.meta.glob<{ default: ImageMetadata }>('../assets/photos/*.jpg', { eager: true });
+const abs = (p: string) => new URL(p, Astro.site).toString();
+const og = await getImage({ src: photos[`../assets/photos/${image}.jpg`].default, width: 1200, height: 630, format: 'jpg', fit: 'cover' });
+const logo = await getImage({ src: logoImg, width: 512, height: 512, format: 'png' });
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const graph = {
+  '@context': 'https://schema.org',
+  '@graph': [organization(abs, abs(logo.src), abs(og.src)), website(abs), ...schema],
+};
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-PH">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{fullTitle}</title>
+    <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    {noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonical} />}
+    <link rel="icon" href={url('/favicon.ico')} sizes="32x32" />
     <link rel="icon" href={url('/favicon.png')} type="image/png" />
-    <link rel="apple-touch-icon" href={url('/favicon.png')} />
+    <link rel="apple-touch-icon" href={url('/apple-touch-icon.png')} />
+    <link rel="manifest" href={url('/site.webmanifest')} />
+    <link rel="sitemap" href={url('/sitemap-index.xml')} />
     <meta name="theme-color" content="#0a0a09" />
+    <meta name="author" content={site.name} />
+    <!-- Local search: Liloan, Cebu, Philippines -->
+    <meta name="geo.region" content="PH-CEB" />
+    <meta name="geo.placename" content="Liloan, Cebu" />
+    <meta name="geo.position" content="10.3884063;124.0022916" />
+    <meta name="ICBM" content="10.3884063, 124.0022916" />
+    <!-- Social sharing (Facebook, Messenger, X, LinkedIn, Viber) -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content={fullTitle} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_PH" />
+    <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(og.src, Astro.site)} />
     <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={abs(og.src)} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={imageAlt} />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={abs(og.src)} />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <script is:inline>
       document.documentElement.classList.add('js');
       if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduced');
     </script>
-    <script
-      type="application/ld+json"
-      set:html={JSON.stringify({
-        '@context': 'https://schema.org',
-        '@type': 'SportsOrganization',
-        name: site.name,
-        sport: 'Running',
-        url: Astro.site?.toString(),
-        telephone: '+63 960 598 4835',
-        founder: site.founder,
-        address: {
-          '@type': 'PostalAddress',
-          streetAddress: 'Purok Ube, Catarman',
-          addressLocality: 'Liloan',
-          addressRegion: 'Cebu',
-          postalCode: '6002',
-          addressCountry: 'PH',
-        },
-        sameAs: [site.facebook],
-      })}
-    />
+    <script type="application/ld+json" set:html={JSON.stringify(graph)} />
     <ClientRouter fallback="swap" />
   </head>
   <body>
