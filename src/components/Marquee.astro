@@ -1,12 +1,13 @@
 ---
 interface Props {
   items: string[];
+  variant?: 'solid' | 'outline';
 }
-const { items } = Astro.props;
+const { items, variant = 'solid' } = Astro.props;
 const run = items.flatMap((t) => [t]);
 ---
 
-<div class="marquee" aria-hidden="true">
+<div class:list={['marquee', variant === 'outline' && 'marquee--outline']} aria-hidden="true">
   <div class="marquee__track">
     {
       [0, 1].map(() => (

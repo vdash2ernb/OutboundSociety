@@ -305,21 +305,19 @@ function reveals() {
   });
 }
 
-/* ── Scroll-reactive: marquees speed up with scroll and flip with direction ── */
+/* ── Scroll-reactive: marquees speed up gently while you scroll ── */
 function velocityMarquee() {
   const tracks = gsap.utils.toArray<HTMLElement>('.marquee__track');
   if (!tracks.length) return;
   // Same calm reading speed for every marquee, however long its list is (~55px per second)
   const loops = tracks.map((t) => gsap.to(t, { xPercent: -50, ease: 'none', duration: t.scrollWidth / 2 / 55, repeat: -1 }));
-  let dir = 1;
+  // Scrolling gives the marquees a gentle push, then they ease back to their calm speed
   const st = ScrollTrigger.create({
     onUpdate: (self) => {
-      const v = self.getVelocity();
-      if (self.direction !== dir) dir = self.direction;
-      const boost = gsap.utils.clamp(1, 2.5, 1 + Math.abs(v) / 1500);
+      const boost = gsap.utils.clamp(1, 2.5, 1 + Math.abs(self.getVelocity()) / 1500);
       loops.forEach((l) => {
-        gsap.to(l, { timeScale: boost * dir, duration: 0.2, overwrite: true });
-        gsap.to(l, { timeScale: dir, duration: 1.2, delay: 0.25, overwrite: false });
+        gsap.killTweensOf(l);
+        gsap.timeline().to(l, { timeScale: boost, duration: 0.2 }).to(l, { timeScale: 1, duration: 1.2 }, '+=0.2');
       });
     },
   });

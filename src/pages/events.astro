@@ -149,7 +149,6 @@ const faqs = [
       pastEvents.map((e, i) => (
         <article class="past" id={e.slug}>
           <header class="past__head">
-            <span class="past__num accent">0{pastEvents.length - i}</span>
             <h3>{e.name}</h3>
             <span class="past__when">{e.when}</span>
           </header>
@@ -440,17 +439,13 @@ const faqs = [
   }
   .past__head {
     display: grid;
-    grid-template-columns: 70px 1fr auto;
+    grid-template-columns: 1fr auto;
     align-items: baseline;
     gap: 16px;
     margin-bottom: 28px;
   }
   .past__head h3 {
     font-size: clamp(40px, 5.5vw, 96px);
-  }
-  .past__num {
-    font-weight: 800;
-    letter-spacing: 0.14em;
   }
   .past__when {
     font-weight: 800;

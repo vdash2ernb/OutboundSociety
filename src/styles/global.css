@@ -280,6 +280,19 @@ h3 { font-size: clamp(28px, 3.4vw, 54px); line-height: 0.95; }
   color: var(--orange);
   font-style: normal;
 }
+/* Big outlined variant: no rules, faint orange stroke */
+.marquee--outline {
+  border: 0;
+  padding-block: clamp(16px, 3vw, 40px);
+}
+.marquee--outline .marquee__track {
+  font-size: clamp(56px, min(8vw, 15vh), 140px);
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(255, 90, 26, 0.55);
+}
+.marquee--outline .marquee__track i {
+  -webkit-text-stroke: 0;
+}
 @keyframes marquee {
   to { transform: translateX(-50%); }
 }
