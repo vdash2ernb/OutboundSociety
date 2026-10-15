@@ -1,0 +1,142 @@
+---
+// First-visit intro: logo spins in, brand name rises, orange stripes wipe to the site.
+// Plays once per browser session; skipped for reduced motion. Animated in src/scripts/motion.ts.
+import { Image } from 'astro:assets';
+import logo from '../assets/logo-circle.webp';
+
+const word = (w: string) => [...w];
+---
+
+<div class="pre" data-preloader aria-hidden="true">
+  <div class="pre__center">
+    <div class="pre__logo">
+      <Image src={logo} alt="" width={320} height={320} loading="eager" />
+    </div>
+    <div class="pre__name">
+      <span class="pre__word">{word('Outbound').map((c) => <span class="pre__ch"><i>{c}</i></span>)}</span>
+      <span class="pre__word">{word('Society').map((c) => <span class="pre__ch"><i>{c}</i></span>)}</span>
+    </div>
+  </div>
+  <div class="pre__foot">
+    <span>Liloan, Cebu</span>
+    <span class="pre__count"><b data-pre-count>0</b>%</span>
+    <span>Community runs</span>
+  </div>
+  <div class="pre__bars">
+    {Array.from({ length: 9 }, () => <i></i>)}
+  </div>
+</div>
+
+<script is:inline>
+  // Decide before first paint whether the intro runs, so returning visitors never see a flash.
+  (function () {
+    var seen = false;
+    try { seen = sessionStorage.getItem('os-intro') === '1'; } catch (e) {}
+    if (seen || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.documentElement.classList.add('no-intro');
+    } else {
+      document.documentElement.classList.add('intro');
+    }
+  })();
+</script>
+
+<style>
+  .pre {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    background: var(--bg);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  :global(html.no-intro) .pre,
+  :global(html:not(.js)) .pre {
+    display: none;
+  }
+  .pre__center {
+    display: grid;
+    justify-items: center;
+    gap: clamp(18px, 3vw, 32px);
+  }
+  .pre__logo {
+    width: clamp(120px, 22vw, 220px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    transform: scale(0.4) rotate(-120deg);
+    opacity: 0;
+  }
+  .pre__logo :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  .pre__name {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0 0.28em;
+    font-family: var(--display);
+    text-transform: uppercase;
+    font-size: clamp(44px, 9vw, 140px);
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+  }
+  .pre__word {
+    display: inline-flex;
+  }
+  .pre__ch {
+    display: inline-block;
+    overflow: hidden;
+    padding-top: 0.08em;
+  }
+  .pre__ch i {
+    display: inline-block;
+    font-style: normal;
+    transform: translateY(110%);
+  }
+  .pre__foot {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: clamp(20px, 4vw, 40px);
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .pre__count {
+    font-family: var(--display);
+    font-size: clamp(28px, 4vw, 48px);
+    letter-spacing: 0;
+    color: var(--fg);
+  }
+  .pre__count b {
+    font-weight: 400;
+  }
+  .pre__bars {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-rows: repeat(9, 1fr);
+    pointer-events: none;
+  }
+  .pre__bars i {
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    margin-block: -1px;
+  }
+  @media (max-width: 600px) {
+    .pre__foot span:not(.pre__count) {
+      display: none;
+    }
+    .pre__foot {
+      justify-content: center;
+    }
+  }
+</style>

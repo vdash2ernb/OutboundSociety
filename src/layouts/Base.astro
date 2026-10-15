@@ -4,6 +4,7 @@ import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import Preloader from '../components/Preloader.astro';
 import { site } from '../data/site';
 import ogImage from '../assets/photos/hnr25-group.jpg';
 import { getImage } from 'astro:assets';
@@ -63,6 +64,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <ClientRouter fallback="swap" />
   </head>
   <body>
+    <Preloader />
     <a class="skip" href="#main">Skip to content</a>
     <Nav />
     <main id="main">
@@ -76,7 +78,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
       import { init, destroy } from '../scripts/motion';
       // The swap replaces <html> attributes, so restore the JS flags before the new page paints.
       document.addEventListener('astro:after-swap', () => {
-        document.documentElement.classList.add('js');
+        document.documentElement.classList.add('js', 'no-intro');
         if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduced');
       });
       document.addEventListener('astro:page-load', init);

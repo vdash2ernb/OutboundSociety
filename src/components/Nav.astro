@@ -10,8 +10,11 @@ const isActive = (href: string) => (href === '/' ? path === url('/') : path.star
 ---
 
 <header class="nav" data-nav>
-  <a href={url('/')} class="nav__logo" aria-label="Outbound Society home">
-    <Image src={logo} alt="Outbound Society" width={112} height={112} loading="eager" />
+  <a href={url('/')} class="nav__brand" aria-label="Outbound Society home">
+    <span class="nav__logo">
+      <Image src={logo} alt="" width={112} height={112} loading="eager" />
+    </span>
+    <span class="nav__name">Outbound<br />Society</span>
   </a>
   <nav class="nav__links" aria-label="Main">
     {
@@ -61,6 +64,19 @@ const isActive = (href: string) => (href === '/' ? path === url('/') : path.star
     backdrop-filter: blur(12px);
     -webkit-backdrop-filter: blur(12px);
   }
+  .nav__brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+  }
+  .nav__name {
+    font-family: var(--display);
+    text-transform: uppercase;
+    font-size: 17px;
+    line-height: 0.95;
+    letter-spacing: 0.04em;
+  }
   .nav__logo {
     display: block;
     width: 56px;
@@ -70,7 +86,7 @@ const isActive = (href: string) => (href === '/' ? path === url('/') : path.star
     flex: none;
     transition: transform 0.6s var(--ease);
   }
-  .nav__logo:hover {
+  .nav__brand:hover .nav__logo {
     transform: rotate(-12deg) scale(1.05);
   }
   .nav__logo img {

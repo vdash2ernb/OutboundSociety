@@ -84,7 +84,7 @@ const V = 'source/facebook/videos';
 const clips = [
   ['hero-start', `${V}/liloan-community-run-2026_gun-start.mp4`, 12, 9],
   ['hero-bridge', `${V}/heart-and-sole-2026_recap-part-1.mp4`, 8, 9],
-  ['hero-costumes', `${V}/haunted-night-run-2025_thank-you.mp4`, 52, 9],
+  ['hero-costumes', `${V}/haunted-night-run-2025_thank-you.mp4`, 17, 9],
 ];
 const vDir = 'public/video';
 fs.mkdirSync(vDir, { recursive: true });

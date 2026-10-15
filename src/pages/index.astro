@@ -31,35 +31,50 @@ const gallery = [
 ---
 
 <Base>
-  <!-- HERO -->
+  <!-- HERO: brand name parts, video card grows to full screen as you scroll -->
   <section class="hero" data-hero>
-    <div class="hero__clips" aria-hidden="true">
-      {
-        clips.map((c, i) => (
-          <div class:list={['hero__clip', i > 0 && 'hero__clip--wide']}>
-            <video src={c.src} poster={c.poster} muted loop playsinline preload={i === 0 ? 'auto' : 'metadata'} data-autoplay aria-label={c.label} />
-          </div>
-        ))
-      }
-    </div>
-    <div class="hero__shade" aria-hidden="true"></div>
-    <div class="hero__content wrap">
-      <p class="eyebrow" data-hero-fade>Community runs · Liloan, Cebu</p>
-      <h1 class="hero__title" aria-label="Run the night.">
-        <span class="split-line" aria-hidden="true"><span>Run</span></span>
-        <span class="split-line" aria-hidden="true"><span>the night<em class="accent">.</em></span></span>
+    <div class="hero__stage">
+      <div class="hero__media" data-hero-media>
+        {
+          clips.map((c, i) => (
+            <video
+              class:list={['hero__vid', i === 0 && 'is-on']}
+              src={c.src}
+              poster={c.poster}
+              muted
+              playsinline
+              preload={i === 0 ? 'auto' : 'metadata'}
+              data-hero-vid
+              aria-label={c.label}
+            />
+          ))
+        }
+        <div class="hero__shade" aria-hidden="true"></div>
+      </div>
+
+      <h1 class="hero__brand" aria-label="Outbound Society" data-hero-brand>
+        <span class="hero__word hero__word--one" data-fit aria-hidden="true">Outbound Society</span>
+        <span class="hero__stack" aria-hidden="true">
+          <span class="hero__word" data-fit>Outbound</span>
+          <span class="hero__word" data-fit>Society</span>
+        </span>
       </h1>
-      <div class="hero__foot">
-        <p class="lede" data-hero-fade>
-          Inclusive, meaningful runs for every pace. Run, jog, walk or come in costume. Nobody gets left behind.
-        </p>
-        <div class="hero__actions" data-hero-fade>
-          <RegisterButton label={`Join ${currentEvent.name}`} />
+
+      <p class="hero__trio display" data-hero-trio aria-label="Run the night.">
+        <span aria-hidden="true">Run</span><span aria-hidden="true">the</span><span aria-hidden="true">night.</span>
+      </p>
+
+      <div class="hero__end wrap" data-hero-end>
+        <p class="eyebrow">Community runs · Liloan, Cebu</p>
+        <p class="lede">Inclusive, meaningful runs for every pace. Run, jog, walk or come in costume. Nobody gets left behind.</p>
+        <div class="hero__actions">
+          <RegisterButton label="Join the next run" />
           <a href={url('/about/')} class="btn btn--ghost">Our story</a>
         </div>
       </div>
+
+      <div class="hero__hint" data-hero-hint aria-hidden="true"><span>Scroll</span></div>
     </div>
-    <div class="hero__scroll" aria-hidden="true"><span>Scroll</span></div>
   </section>
 
   <Marquee items={['Community over competition', 'Every stride counts', 'No runner left behind', 'Run · Jog · Walk', 'Run the night']} />
@@ -185,98 +200,149 @@ const gallery = [
   .hero {
     position: relative;
     height: 100svh;
-    min-height: 640px;
-    overflow: hidden;
-    display: flex;
-    align-items: flex-end;
+    min-height: 560px;
   }
-  .hero__clips {
+  .hero__stage {
+    position: relative;
+    height: 100%;
+    overflow: hidden;
+  }
+  .hero__media {
     position: absolute;
     inset: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 6px;
-  }
-  .hero__clip {
-    position: relative;
-    overflow: hidden;
     background: var(--bg-2);
+    /* Starts as a centred card; motion.ts scrubs it open to full screen */
+    clip-path: inset(var(--card-t) var(--card-x) var(--card-b) var(--card-x) round 14px);
+    --card-t: 33%;
+    --card-b: 10%;
+    --card-x: 31%;
+    will-change: clip-path;
   }
-  .hero__clip video {
+  .hero__vid {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: saturate(1.08) contrast(1.05);
+    opacity: 0;
+    transition: opacity 0.9s ease;
+    transform: scale(1.15);
+  }
+  .hero__vid.is-on {
+    opacity: 1;
   }
   .hero__shade {
     position: absolute;
     inset: 0;
-    background:
-      linear-gradient(180deg, rgba(10, 10, 9, 0.55) 0%, rgba(10, 10, 9, 0.05) 30%, rgba(10, 10, 9, 0.35) 60%, rgba(10, 10, 9, 0.96) 100%);
+    background: linear-gradient(180deg, rgba(10, 10, 9, 0.35), rgba(10, 10, 9, 0.1) 40%, rgba(10, 10, 9, 0.85));
+    opacity: 0;
   }
-  .hero__content {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    padding-bottom: clamp(40px, 6vw, 80px);
+  .hero__brand {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: clamp(88px, 11vh, 120px);
+    margin: 0;
+    pointer-events: none;
+    display: grid;
+    justify-items: center;
   }
-  .hero__title {
-    font-size: clamp(88px, 19vw, 360px);
+  .hero__word {
+    display: block;
+    white-space: nowrap;
+    font-size: 8.4vw;
     line-height: 0.82;
-    margin-top: 18px;
   }
-  .hero__title em {
-    font-style: normal;
+  .hero__stack {
+    display: none;
   }
-  .hero__foot {
+  .hero__trio {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    top: 52%;
+    translate: 0 -50%;
     display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
     justify-content: space-between;
-    gap: 28px;
-    margin-top: 28px;
+    font-size: clamp(30px, 4.6vw, 84px);
+    line-height: 1;
+    margin: 0;
+    pointer-events: none;
+  }
+  .hero__trio span:last-child {
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--fg);
+  }
+  .hero__end {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: clamp(28px, 6vh, 64px);
+    display: grid;
+    gap: 18px;
+    justify-items: start;
   }
   .hero__actions {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
   }
-  .hero__scroll {
+  .hero__hint {
     position: absolute;
-    right: var(--gutter);
-    top: 50%;
-    z-index: 2;
-    writing-mode: vertical-rl;
-    font-size: 12px;
+    left: 50%;
+    bottom: 8px;
+    translate: -50% 0;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 0.3em;
     text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    display: grid;
+    justify-items: center;
+    gap: 6px;
+    color: var(--muted);
+    display: none;
   }
-  .hero__scroll::after {
-    content: '';
-    width: 2px;
-    height: 70px;
-    background: linear-gradient(var(--orange), transparent);
-    animation: drip 2s var(--ease) infinite;
-    transform-origin: top;
+  /* Before JS runs (or with reduced motion) show the finished, readable layout */
+  :global(html:not(.js)) .hero__media,
+  :global(html.reduced) .hero__media {
+    clip-path: none;
   }
-  @keyframes drip {
-    0% { transform: scaleY(0); }
-    50% { transform: scaleY(1); }
-    100% { transform: scaleY(1); opacity: 0; }
+  :global(html:not(.js)) .hero__shade,
+  :global(html.reduced) .hero__shade {
+    opacity: 1;
+  }
+  :global(html:not(.js)) .hero__trio,
+  :global(html.reduced) .hero__trio {
+    display: none;
+  }
+  :global(html.js:not(.reduced)) .hero__end {
+    opacity: 0;
+    visibility: hidden;
   }
   @media (max-width: 760px) {
-    .hero__clips {
-      grid-template-columns: 1fr;
+    .hero__media {
+      --card-t: 38%;
+      --card-b: 12%;
+      --card-x: 9%;
     }
-    .hero__clip--wide {
+    .hero__word--one {
       display: none;
     }
-    .hero__scroll {
-      display: none;
+    .hero__stack {
+      display: grid;
+      justify-items: center;
+      gap: 0.04em;
+    }
+    .hero__word {
+      font-size: 21vw;
+    }
+    .hero__trio {
+      top: auto;
+      bottom: 22%;
+      translate: none;
+    }
+    .hero__end :global(.btn) {
+      padding: 0 22px;
     }
   }
 

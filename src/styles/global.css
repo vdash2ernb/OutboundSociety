@@ -285,6 +285,10 @@ h3 { font-size: clamp(28px, 3.4vw, 54px); line-height: 0.95; }
 @media (prefers-reduced-motion: reduce) {
   .marquee__track { animation: none; }
 }
+/* With JS, GSAP drives the marquee so it can react to scroll speed */
+html.js:not(.reduced) .marquee__track {
+  animation: none;
+}
 
 /* ── Page transition (Astro view transitions) ── */
 ::view-transition-old(root) {
