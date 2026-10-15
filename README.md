@@ -1,6 +1,7 @@
 # Outbound Society website
 
-Astro static site for Outbound Society, a non-profit community running organizer in Liloan, Cebu. It is hosted on Cloudflare Pages.
+Astro static site for Outbound Society, a non-profit community running organizer in Liloan, Cebu.
+Live at **https://outboundsociety.org**, hosted on GitHub Pages.
 
 ## Run it locally
 
@@ -21,12 +22,13 @@ Edit **`src/data/current-event.ts`**. The Home and Events pages both read from i
 
 New photos go in `src/assets/photos/` as `.jpg` files and are referenced by file name without the extension. Astro resizes them and converts them to AVIF/WebP at build time.
 
-## Deploying to Cloudflare Pages
+## Deploying
 
-1. In Cloudflare go to **Workers & Pages → Create → Pages → Connect to Git** and pick `vdash2ernb/OutboundSociety`.
-2. Set the framework preset to **Astro**, the build command to `npm run build`, and the output directory to `dist`.
-3. Every push to `main` then redeploys the site automatically.
-4. Add the Squarespace domain under **Custom domains** and follow the DNS steps Cloudflare shows. After that, update `site` in `astro.config.mjs` to the real domain.
+Every push to `main` builds and publishes automatically through GitHub Actions (`.github/workflows/deploy-pages.yml`) to GitHub Pages.
+
+- **Custom domain:** `outboundsociety.org`, set in `public/CNAME` and in the repo's Pages settings. `www` and the old `vdash2ernb.github.io/OutboundSociety` link both redirect to it.
+- **HTTPS:** a free Let's Encrypt certificate is issued and renewed automatically by GitHub, and "Enforce HTTPS" is on.
+- **DNS (Squarespace):** four A records for `@` point to `185.199.108.153`, `.109.153`, `.110.153` and `.111.153`, and a CNAME for `www` points to `vdash2ernb.github.io`. The Google Workspace MX/TXT records handle email; don't remove them.
 
 ## Folders
 
