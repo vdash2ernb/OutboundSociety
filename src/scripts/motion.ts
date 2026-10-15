@@ -170,18 +170,32 @@ function heroScroll(entranceDelay = 0) {
 }
 
 function heroVideos() {
-  const hero = document.querySelector<HTMLElement>('[data-hero-media]');
-  if (!hero) return;
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const media = hero?.querySelector<HTMLElement>('[data-hero-media]');
+  if (!hero || !media) return;
   // Phones only show (and download) the middle clip
-  const vids = [...hero.querySelectorAll<HTMLVideoElement>('[data-hero-vid]')].filter(
+  const vids = [...media.querySelectorAll<HTMLVideoElement>('[data-hero-vid]')].filter(
     (v) => v.dataset.heroVid === 'main' || isDesktop()
   );
   vids.forEach((v) => v.dataset.heroVid === 'side' && (v.preload = 'auto'));
+  let visible = false;
+  // If the browser refuses autoplay (e.g. iPhone Low Power Mode), the poster stays up as the fallback
+  const play = () => !reduced() && vids.forEach((v) => v.paused && v.play().catch(() => {}));
+  // Watch the section, not the card: the card starts clipped to zero area, which some browsers count as off screen
   const io = new IntersectionObserver(([e]) => {
-    vids.forEach((v) => (e.isIntersecting && !reduced() ? v.play().catch(() => {}) : v.pause()));
+    visible = e.isIntersecting;
+    visible ? play() : vids.forEach((v) => v.pause());
   });
   io.observe(hero);
-  cleanups.push(() => io.disconnect());
+  // A refused autoplay is allowed again after the visitor taps or presses a key
+  const retry = () => visible && play();
+  window.addEventListener('pointerdown', retry);
+  window.addEventListener('keydown', retry);
+  cleanups.push(() => {
+    io.disconnect();
+    window.removeEventListener('pointerdown', retry);
+    window.removeEventListener('keydown', retry);
+  });
 }
 
 function navBehaviour() {
