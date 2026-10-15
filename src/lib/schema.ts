@@ -5,6 +5,9 @@ import { pastEvents } from '../data/past-events';
 
 type Abs = (path: string) => string;
 
+// Self-contained reference to the organization (validators resolve it even on its own)
+const orgRef = (abs: Abs) => ({ '@type': 'Organization', '@id': abs('/#org'), name: site.name, url: abs('/') });
+
 const address = {
   '@type': 'PostalAddress',
   streetAddress: 'Purok Ube, Catarman',
@@ -27,7 +30,6 @@ export function organization(abs: Abs, logo: string, image: string) {
     slogan: 'Run the night.',
     founder: { '@type': 'Person', name: site.founder },
     foundingDate: '2025',
-    nonprofitStatus: 'Nonprofit',
     telephone: '+63 960 598 4835',
     address,
     geo: { '@type': 'GeoCoordinates', latitude: 10.3884063, longitude: 124.0022916 },
@@ -47,7 +49,7 @@ export function website(abs: Abs) {
     url: abs('/'),
     name: site.name,
     inLanguage: 'en-PH',
-    publisher: { '@id': abs('/#org') },
+    publisher: orgRef(abs),
   };
 }
 
@@ -78,8 +80,8 @@ export function currentEventSchema(abs: Abs, images: string[]) {
       validFrom: ev.registrationOpens,
       validThrough: ev.registrationClosesAt,
     },
-    organizer: { '@id': abs('/#org') },
-    performer: { '@id': abs('/#org') },
+    organizer: orgRef(abs),
+    performer: orgRef(abs),
     isAccessibleForFree: false,
     typicalAgeRange: 'all ages',
   };
@@ -100,7 +102,7 @@ export function nextUpSchema(abs: Abs, image: string) {
       name: 'Sitio Suba, Poblacion',
       address: { '@type': 'PostalAddress', streetAddress: 'Sitio Suba, Poblacion', addressLocality: 'Liloan', addressRegion: 'Cebu', addressCountry: 'PH' },
     },
-    organizer: { '@id': abs('/#org') },
+    organizer: orgRef(abs),
   };
 }
 
@@ -115,7 +117,7 @@ export function pastEventSchemas(abs: Abs, imageFor: (name: string) => string) {
     image: [imageFor(e.cover)],
     url: abs(`/events/#${e.slug}`),
     location: { '@type': 'Place', name: e.where, address: { '@type': 'PostalAddress', addressLocality: 'Liloan', addressRegion: 'Cebu', addressCountry: 'PH' } },
-    organizer: { '@id': abs('/#org') },
+    organizer: orgRef(abs),
   }));
 }
 

@@ -40,7 +40,7 @@ const abs = (p: string) => new URL(p, Astro.site).toString();
   image="hnr25-crew"
   imageAlt="Outbound Society runners with their medals in Liloan, Cebu"
   schema={[
-    { '@type': 'AboutPage', '@id': abs('/about/'), url: abs('/about/'), name: `About ${site.name}`, about: { '@id': abs('/#org') } },
+    { '@type': 'AboutPage', '@id': abs('/about/'), url: abs('/about/'), name: `About ${site.name}`, about: { '@type': 'Organization', '@id': abs('/#org'), name: site.name } },
     breadcrumbs(abs, [{ name: 'About', path: '/about/' }]),
   ]}
 >
