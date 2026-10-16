@@ -8,8 +8,12 @@ ScrollTrigger.config({ ignoreMobileResize: true });
 
 let lenis: Lenis | null = null;
 const cleanups: Array<() => void> = [];
-const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Reduce Motion (OS accessibility setting); `?motion=reduced` previews it on any device
+const reduced = () =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches || location.search.includes('motion=reduced');
 const isDesktop = () => window.matchMedia('(min-width: 900px)').matches;
+// Hero shows three video columns from this width up (matches the CSS breakpoint in index.astro)
+const heroWide = () => window.matchMedia('(min-width: 761px)').matches;
 const isTouch = () => window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
 function smoothScroll() {
@@ -38,6 +42,28 @@ function preloader(): Promise<void> {
   return new Promise((resolve) => {
     const count = el.querySelector('[data-pre-count]');
     const counter = { v: 0 };
+    const finish = () => {
+      el.remove();
+      html.classList.remove('intro');
+      lenis?.start();
+      resolve();
+    };
+
+    // Reduce Motion on (accessibility setting): same brand moment, but only gentle fades
+    if (reduced()) {
+      const logo = el.querySelector('.pre__logo');
+      gsap.set(logo, { scale: 1, rotate: 0 });
+      gsap.set(el.querySelectorAll('.pre__ch i'), { y: 0, yPercent: 0, opacity: 0 });
+      gsap
+        .timeline({ onComplete: finish })
+        .to(logo, { opacity: 1, duration: 0.6, ease: 'power1.out' })
+        .to(el.querySelectorAll('.pre__ch i'), { opacity: 1, duration: 0.6, stagger: 0.02, ease: 'power1.out' }, 0.3)
+        .to(counter, { v: 100, duration: 1.4, ease: 'none', onUpdate: () => count && (count.textContent = String(Math.round(counter.v))) }, 0)
+        .to(el, { opacity: 0, duration: 0.6, ease: 'power1.inOut' }, 1.7);
+      window.setTimeout(finish, 4000);
+      return;
+    }
+
     const tl = gsap.timeline({
       defaults: { ease: 'expo.out' },
       onComplete: () => {
@@ -138,7 +164,7 @@ function heroScroll(entranceDelay = 0) {
   const tagY = () => window.innerHeight - 24 - (tag.offsetTop + tag.offsetHeight);
   const cardT = () => `${((navH() + brand.offsetHeight + 18) / window.innerHeight) * 100}%`;
   const cardB = () => `${((tag.offsetHeight + 24 + 18) / window.innerHeight) * 100}%`;
-  const cardX = mobile ? '7%' : '35.5%'; // desktop: frames just the middle clip
+  const cardX = heroWide() ? '35.5%' : '7%'; // 3-column layout: the card frames just the middle clip
 
   const tl = gsap.timeline({
     defaults: { ease: 'none' },
@@ -175,7 +201,7 @@ function heroVideos() {
   if (!hero || !media) return;
   // Phones only show (and download) the middle clip
   const vids = [...media.querySelectorAll<HTMLVideoElement>('[data-hero-vid]')].filter(
-    (v) => v.dataset.heroVid === 'main' || isDesktop()
+    (v) => v.dataset.heroVid === 'main' || heroWide()
   );
   vids.forEach((v) => v.dataset.heroVid === 'side' && (v.preload = 'auto'));
   let visible = false;
@@ -213,6 +239,19 @@ function navBehaviour() {
   };
   window.addEventListener('scroll', onScroll, { passive: true });
   cleanups.push(() => window.removeEventListener('scroll', onScroll));
+
+  // Reduce Motion: no pinned hero, so reveal the header name once the hero name has scrolled off
+  const heroEl = document.querySelector<HTMLElement>('[data-hero]');
+  if (heroEl && reduced()) {
+    nav.classList.add('hide-name');
+    const onName = () => nav.classList.toggle('show-name', window.scrollY > heroEl.offsetHeight * 0.45);
+    onName();
+    window.addEventListener('scroll', onName, { passive: true });
+    cleanups.push(() => {
+      window.removeEventListener('scroll', onName);
+      nav.classList.remove('hide-name', 'show-name');
+    });
+  }
 
   const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
   const menu = document.querySelector<HTMLElement>('[data-menu]');

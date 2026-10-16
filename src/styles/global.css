@@ -219,6 +219,9 @@ h3 { font-size: clamp(28px, 3.4vw, 54px); line-height: 0.95; }
   pointer-events: none;
 }
 .link {
+  /* standalone text links get a 28px tall hit area for thumbs */
+  display: inline-block;
+  padding-block: 4px;
   text-decoration: none;
   background: linear-gradient(var(--orange), var(--orange)) 0 100% / 0 2px no-repeat;
   transition: background-size 0.4s var(--ease), color 0.3s;

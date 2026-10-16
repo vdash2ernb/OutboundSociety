@@ -81,7 +81,7 @@ const graph = {
     <meta name="twitter:image:alt" content={imageAlt} />
     <script is:inline>
       document.documentElement.classList.add('js');
-      if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduced');
+      if (matchMedia('(prefers-reduced-motion: reduce)').matches || location.search.includes('motion=reduced')) document.documentElement.classList.add('reduced');
     </script>
     <script type="application/ld+json" set:html={JSON.stringify(graph)} />
     <ClientRouter fallback="swap" />
@@ -104,7 +104,7 @@ const graph = {
       // The swap replaces <html> attributes, so restore the JS flags before the new page paints.
       document.addEventListener('astro:after-swap', () => {
         document.documentElement.classList.add('js', 'no-intro');
-        if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('reduced');
+        if (matchMedia('(prefers-reduced-motion: reduce)').matches || location.search.includes('motion=reduced')) document.documentElement.classList.add('reduced');
       });
       document.addEventListener('astro:page-load', init);
       document.addEventListener('astro:before-swap', destroy);

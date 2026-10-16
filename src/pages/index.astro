@@ -247,7 +247,8 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
   .hero__shade {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(10, 10, 9, 0.35), rgba(10, 10, 9, 0.1) 40%, rgba(10, 10, 9, 0.85));
+    /* light at the top so the clip shows, near-solid behind the closing copy */
+    background: linear-gradient(180deg, rgba(10, 10, 9, 0.4), rgba(10, 10, 9, 0.2) 35%, rgba(10, 10, 9, 0.8) 62%, rgba(10, 10, 9, 0.95));
     opacity: 0;
   }
   .hero__center {
@@ -292,6 +293,19 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
     display: grid;
     gap: 18px;
     justify-items: start;
+    text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
+  }
+  /* Over video, grey text washes out: keep the hero copy bright */
+  .hero__end .eyebrow {
+    color: var(--fg);
+  }
+  .hero__end .lede {
+    color: var(--fg);
+    font-weight: 500;
+  }
+  .hero__end :global(.btn--ghost) {
+    background: rgba(10, 10, 9, 0.55);
+    border-color: rgba(243, 239, 231, 0.4);
   }
   .hero__actions {
     display: flex;
@@ -325,6 +339,56 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
   :global(html.js:not(.reduced)) .hero__end {
     opacity: 0;
     visibility: hidden;
+  }
+  /* Short screens (phones held sideways): the pinned hero's closing copy must fit,
+     so drop the paragraph (it repeats below) and run eyebrow + buttons in one row */
+  @media (max-height: 540px) and (orientation: landscape) {
+    .hero {
+      min-height: 0;
+    }
+    .hero__end {
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 12px 20px;
+    }
+    .hero__end .lede {
+      display: none;
+    }
+    .hero__end .hero__actions :global(.btn) {
+      --h: 48px;
+      padding: 0 20px;
+    }
+  }
+  /* Static layout (Reduce Motion / no JS): name + tagline up top, intro copy and
+     buttons below, stacked in normal flow so they can never overlap on short phones */
+  :global(html:not(.js)) .hero,
+  :global(html.reduced) .hero {
+    height: auto;
+    min-height: 100svh;
+  }
+  :global(html:not(.js)) .hero__stage,
+  :global(html.reduced) .hero__stage {
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: clamp(32px, 6vh, 64px);
+    padding-top: clamp(110px, 16vh, 160px);
+    padding-bottom: clamp(28px, 6vh, 64px);
+  }
+  :global(html:not(.js)) .hero__center,
+  :global(html.reduced) .hero__center {
+    position: relative;
+    inset: auto;
+  }
+  :global(html:not(.js)) .hero__end,
+  :global(html.reduced) .hero__end {
+    position: relative;
+    inset: auto;
+  }
+  :global(html:not(.js)) .hero__shade,
+  :global(html.reduced) .hero__shade {
+    background: linear-gradient(180deg, rgba(10, 10, 9, 0.75), rgba(10, 10, 9, 0.45) 40%, rgba(10, 10, 9, 0.85) 62%, rgba(10, 10, 9, 0.95));
   }
   @media (max-width: 760px) {
     .hero__word--one {
@@ -380,7 +444,7 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
   /* STATS */
   .stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
   }
@@ -407,7 +471,16 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
   }
   @media (max-width: 860px) {
     .stats {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .stat {
+      padding: 28px 16px 26px 0;
+    }
+    .stat + .stat {
+      padding-left: 16px;
+    }
+    .stat__value {
+      font-size: clamp(44px, 13vw, 72px);
     }
     .stat:nth-child(3) {
       border-left: 0;
@@ -483,7 +556,7 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
     line-height: 1;
   }
   .countdown small {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.16em;
     text-transform: uppercase;

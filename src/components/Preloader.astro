@@ -1,6 +1,6 @@
 ---
 // First-visit intro: logo spins in, brand name rises, orange stripes wipe to the site.
-// Plays on every fresh page load (not on in-site navigation); skipped for reduced motion. Animated in src/scripts/motion.ts.
+// Plays on every fresh page load (not on in-site navigation). With Reduce Motion on it is a gentle fade instead. Animated in src/scripts/motion.ts.
 import { Image } from 'astro:assets';
 import logo from '../assets/logo-circle.webp';
 
@@ -31,7 +31,7 @@ const word = (w: string) => [...w];
   // Play on every fresh page load, but not when moving between pages inside the site.
   (function () {
     var html = document.documentElement;
-    if (window.__osBooted || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (window.__osBooted) {
       html.classList.add('no-intro');
       html.classList.remove('intro');
     } else {

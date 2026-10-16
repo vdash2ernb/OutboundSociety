@@ -11,7 +11,9 @@ const lines: Record<string, { page: string; line: string }> = {
 };
 
 const base = import.meta.env.BASE_URL.replace(/\/$/, '');
-const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+// Reduce Motion (OS accessibility setting); `?motion=reduced` previews it on any device
+const reduced = () =>
+  window.matchMedia('(prefers-reduced-motion: reduce)').matches || location.search.includes('motion=reduced');
 
 const parts = () => {
   const el = document.querySelector<HTMLElement>('[data-curtain]');

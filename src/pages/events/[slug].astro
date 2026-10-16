@@ -245,7 +245,12 @@ const others = [
     text-transform: uppercase;
     color: var(--muted);
   }
+  .crumbs {
+    align-items: center;
+  }
   .crumbs a {
+    display: inline-block;
+    padding-block: 6px; /* comfortable tap target */
     text-decoration: none;
     transition: color 0.3s;
   }
