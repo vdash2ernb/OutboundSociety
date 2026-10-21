@@ -105,9 +105,9 @@ const pastImages = Object.fromEntries(
               <p class="muted">{e.where}</p>
               <a class="link past__more" href={url(`/events/${e.slug}/`)}>The full story and photos →</a>
             </div>
-            <div class:list={['past__photos', `n${Math.min(e.photos.length, 8)}`]}>
+            <div class="photo-grid past__photos">
               {e.photos.map((p) => (
-                <Photo name={p} alt={`${e.name}, ${e.when}`} sizes="(max-width: 900px) 50vw, 20vw" />
+                <Photo name={p} alt={`${e.name}, ${e.when}`} sizes="(max-width: 600px) 50vw, (max-width: 900px) 33vw, 20vw" />
               ))}
             </div>
           </div>
@@ -234,17 +234,6 @@ const pastImages = Object.fromEntries(
   .past__text p {
     margin: 0 0 12px;
   }
-  .past__photos {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-  }
-  .past__photos :global(.media) {
-    aspect-ratio: 1;
-  }
-  .past__photos.n3 {
-    grid-template-columns: repeat(3, 1fr);
-  }
   .archive__more {
     border-top: 1px solid var(--line);
     padding-top: 32px;
@@ -257,12 +246,6 @@ const pastImages = Object.fromEntries(
     }
     .past__body {
       grid-template-columns: 1fr;
-    }
-    .past__photos {
-      grid-template-columns: repeat(2, 1fr);
-    }
-    .past__photos.n3 {
-      grid-template-columns: repeat(3, 1fr);
     }
   }
 </style>

@@ -258,6 +258,26 @@ h3 { font-size: clamp(28px, 3.4vw, 54px); line-height: 0.95; }
   object-fit: cover;
 }
 
+/* ── Photo grids: every gallery uses the same square tiles and spacing ── */
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols, 4), minmax(0, 1fr));
+  gap: clamp(8px, 1vw, 14px);
+}
+.photo-grid > .media {
+  aspect-ratio: 1;
+}
+@media (max-width: 900px) {
+  .photo-grid {
+    --cols: 3;
+  }
+}
+@media (max-width: 600px) {
+  .photo-grid {
+    --cols: 2;
+  }
+}
+
 /* ── Marquee ── */
 .marquee {
   overflow: hidden;

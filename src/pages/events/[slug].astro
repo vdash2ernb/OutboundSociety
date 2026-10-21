@@ -155,8 +155,8 @@ const others = [
         )
       }
     </div>
-    <div class="gallery__grid">
-      {run.gallery.map((p, i) => <Photo name={p} alt={`${run.galleryAlt}, photo ${i + 1}`} sizes="(max-width: 700px) 50vw, 33vw" />)}
+    <div class="photo-grid">
+      {run.gallery.map((p, i) => <Photo name={p} alt={`${run.galleryAlt}, photo ${i + 1}`} sizes="(max-width: 600px) 50vw, (max-width: 900px) 33vw, 25vw" />)}
     </div>
     <p class="gallery__more muted" data-fade>
       More photos and race-day videos on our <a class="link" href={site.facebook} target="_blank" rel="noopener">Facebook page</a>.
@@ -295,17 +295,6 @@ const others = [
   .gallery__head .link {
     font-weight: 700;
   }
-  .gallery__grid {
-    columns: 3;
-    column-gap: 10px;
-  }
-  .gallery__grid :global(.media) {
-    break-inside: avoid;
-    margin-bottom: 10px;
-  }
-  .gallery__grid :global(img) {
-    height: auto;
-  }
   .gallery__more {
     margin: 32px 0 0;
     padding-top: 32px;
@@ -352,11 +341,6 @@ const others = [
     }
     .more__grid {
       grid-template-columns: 1fr 1fr;
-    }
-  }
-  @media (max-width: 700px) {
-    .gallery__grid {
-      columns: 2;
     }
   }
   @media (max-width: 480px) {
