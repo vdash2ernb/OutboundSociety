@@ -14,7 +14,7 @@ https://www.sixmorevodka.com/ is the kind of website we want: a bold creative-ag
 ## Decisions (2026-10-15)
 - **Hosting**: Astro, deployed on Cloudflare (free plan, auto-deploy from GitHub). Squarespace domain pointed at Cloudflare later.
 - **Pages**: simplified (see proposed structure below).
-- **Registration**: Google Forms, with the link changing per event. The current event is Haunted Night Run 2026 (forms.gle/w1sueWBvCA7E2ENM6). The current event (name, date, venue, fee, poster, form link) is kept in one data file, so switching to the next event means editing that one file.
+- **Registration**: Google Forms, with the link changing per event. The current event is Haunted Night Run 2026 (forms.gle/7jVeCPXSEvYX2gEw8). The current event (name, date, venue, fee, poster, form link) is kept in one data file, so switching to the next event means editing that one file.
 - **Event history**: built from Facebook photos and videos plus the Google Maps and Google Site material.
 
 ## Proposed page structure (pending client OK)

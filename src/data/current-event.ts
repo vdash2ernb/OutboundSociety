@@ -31,7 +31,7 @@ export const currentEvent = {
   address: 'Bajac, Liloan, Cebu',
   mapUrl: 'https://www.google.com/maps/search/?api=1&query=Bakeria+Box+Bajac+Liloan+Cebu',
   fee: '₱180',
-  registerUrl: 'https://forms.gle/w1sueWBvCA7E2ENM6',
+  registerUrl: 'https://forms.gle/7jVeCPXSEvYX2gEw8',
   registrationCloses: 'October 28, 2026',
   // Set to false once registration closes to swap the button for "Registration closed".
   registrationOpen: true,
