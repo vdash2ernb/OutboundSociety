@@ -23,8 +23,10 @@ import SplitHeading from './SplitHeading.astro';
 
     <div class="footer__grid">
       <div class="footer__brand">
-        <Image src={logo} alt="Outbound Society logo" width={160} height={160} class="footer__logo" />
-        <p class="footer__name">Outbound<br />Society</p>
+        <a href={url('/')} class="footer__home" aria-label="Outbound Society home">
+          <Image src={logo} alt="" width={160} height={160} class="footer__logo" />
+          <p class="footer__name">Outbound<br />Society</p>
+        </a>
         <p class="muted">A Cebuano non-profit bringing communities together through inclusive, meaningful runs.</p>
       </div>
       <div>
@@ -89,11 +91,20 @@ import SplitHeading from './SplitHeading.astro';
   .footer__grid p {
     margin: 0 0 8px;
   }
+  .footer__home {
+    display: inline-block;
+    text-decoration: none;
+  }
   .footer__logo {
     width: 88px;
     height: 88px;
     border-radius: 50%;
     margin-bottom: 18px;
+    transition: transform 0.6s var(--ease);
+  }
+  /* Same tilt as the logo in the header */
+  .footer__home:hover .footer__logo {
+    transform: rotate(-12deg) scale(1.05);
   }
   .footer__brand p {
     max-width: 32ch;
