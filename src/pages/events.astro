@@ -25,7 +25,7 @@ const pastImages = Object.fromEntries(
 
 <Base
   title={`${ev.name} · Liloan Fun Runs | ${site.name}`}
-  description={`${ev.name} is on ${ev.dateLabel} at ${ev.venue}, ${ev.address}. ${ev.fee} includes a finisher's medal and post-run meal. Kids 3 km and adults 5 km. Register online now.`}
+  description={`${ev.name} is on ${ev.dateLabel} at ${ev.venue}, ${ev.address}. ${ev.fee} includes a finisher's medal and post-run meal. Kids 3 km and adults 5 km. ${ev.registrationOpen ? 'Register online now.' : `Next: ${nextUp.name}, ${nextUp.dateLabel}.`}`}
   image={ev.featurePhoto}
   imageAlt={`${ev.name}, a community night run in Liloan, Cebu`}
   schema={[
@@ -42,11 +42,11 @@ const pastImages = Object.fromEntries(
       <Photo name={ev.heroPhoto} alt="" sizes="100vw" loading="eager" parallax />
     </div>
     <div class="wrap ehero__content">
-      <span class="eyebrow">Now open · {ev.dateLabel}</span>
+      <span class="eyebrow">{ev.registrationOpen ? 'Now open' : 'Next run'} · {ev.dateLabel}</span>
       <SplitHeading as="h1" lines={ev.headingLines} accentLast />
       <p class="lede">{ev.tagline} Get your crew ready for a night of running, prizes, surprises and a little bit of fright.</p>
       <div class="ehero__actions">
-        <RegisterButton label={`Register · ${ev.fee}`} />
+        <RegisterButton run={ev} label={`Register · ${ev.fee}`} />
         <a href="#details" class="btn btn--ghost">See details ↓</a>
       </div>
     </div>
@@ -59,7 +59,7 @@ const pastImages = Object.fromEntries(
       { label: 'Date', value: ev.dateLabel },
       { label: 'Venue', value: ev.venue, href: ev.mapUrl, note: ev.address },
       { label: 'Entry', value: ev.fee, note: 'Medal + post-run meal' },
-      { label: 'Register by', value: ev.registrationCloses },
+      ev.registrationOpen ? { label: 'Register by', value: ev.registrationCloses } : { label: 'Registration', value: 'Closed', note: ev.registrationCloses },
     ]}
   />
 
@@ -74,15 +74,29 @@ const pastImages = Object.fromEntries(
   <Faq />
 
   <!-- COMING UP -->
-  <section class="section upnext">
+  <section class="section upnext" id="coming-up">
     <div class="wrap upnext__grid">
       <div>
-        <span class="eyebrow">Coming up</span>
+        <span class="eyebrow">Coming up{nextUp.registrationOpen && ' · Registration open'}</span>
         <SplitHeading lines={['Pit Señor', 'Fiesta Run']} accentLast />
         <p class="upnext__date display" data-fade>{nextUp.dateLabel}</p>
         <p class="lede" data-fade>{nextUp.blurb}</p>
-        <p class="muted" data-fade>{nextUp.place} · Registration details coming soon on Facebook.</p>
-        <a class="btn btn--ghost" href={nextUp.link} target="_blank" rel="noopener" data-fade>Get notified on Facebook ↗</a>
+        {
+          nextUp.registrationOpen ? (
+            <>
+              <p class="muted" data-fade>{nextUp.place}</p>
+              <div class="upnext__actions" data-fade>
+                <RegisterButton run={nextUp} />
+                <a class="btn btn--ghost" href={nextUp.link} target="_blank" rel="noopener">Updates on Facebook ↗</a>
+              </div>
+            </>
+          ) : (
+            <>
+              <p class="muted" data-fade>{nextUp.place} · Registration details coming soon on Facebook.</p>
+              <a class="btn btn--ghost" href={nextUp.link} target="_blank" rel="noopener" data-fade>Get notified on Facebook ↗</a>
+            </>
+          )
+        }
       </div>
       <Photo name={nextUp.poster} alt="Pit Señor Fiesta Run poster" sizes="(max-width: 900px) 100vw, 40vw" />
     </div>
@@ -184,6 +198,11 @@ const pastImages = Object.fromEntries(
   .upnext__date {
     font-size: clamp(32px, 3.4vw, 56px);
     margin: 0;
+  }
+  .upnext__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
   }
   @media (max-width: 900px) {
     .upnext__grid {

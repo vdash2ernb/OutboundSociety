@@ -31,10 +31,10 @@ export const currentEvent = {
   address: 'Bajac, Liloan, Cebu',
   mapUrl: 'https://www.google.com/maps/search/?api=1&query=Bakeria+Box+Bajac+Liloan+Cebu',
   fee: '₱180',
-  registerUrl: 'https://forms.gle/7jVeCPXSEvYX2gEw8',
+  registerUrl: 'https://forms.gle/w1sueWBvCA7E2ENM6',
   registrationCloses: 'October 28, 2026',
   // Set to false once registration closes to swap the button for "Registration closed".
-  registrationOpen: true,
+  registrationOpen: false,
   poster: 'hnr26-poster', // file name in src/assets/photos (without .jpg)
   heroPhoto: 'hnr25-group', // wide photo behind the Events page header
   featurePhoto: 'hnr25-capes', // portrait photo beside the event on the Home page
@@ -96,8 +96,13 @@ export const currentEvent = {
 };
 
 // The run after this one. Shown as "Coming up" on the Events page.
+// Once its registration opens and the current run's has closed, the general Register
+// buttons (menu, footer, home hero) sign people up for this run instead.
 export const nextUp = {
   name: 'Pit Señor Fiesta Run',
+  shortName: 'Pit Señor', // for button labels
+  registerUrl: 'https://forms.gle/7jVeCPXSEvYX2gEw8',
+  registrationOpen: true,
   dateLabel: 'January 3, 2027',
   date: '2027-01-03',
   place: 'Sitio Suba, Poblacion, Liloan, Cebu',

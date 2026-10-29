@@ -18,6 +18,7 @@ Edit **`src/data/current-event.ts`**. The Home and Events pages both read from i
 - Change the name, date, venue, fee, schedule, prizes and sponsors.
 - Paste the new Google Form link into `registerUrl`.
 - Set `registrationOpen: false` when registration closes. The orange buttons then switch to "Registration closed".
+- When the run after it opens registration first, put its Google Form link in `nextUp.registerUrl` and set `nextUp.registrationOpen: true`. The menu, footer and home hero buttons then read "Register · <shortName>" and sign people up for that run, and the Events page's "Coming up" section gets its own Register button.
 - When the event is over, move it into `src/data/past-events.ts` (newest first), and update `nextUp` for the run after that.
 
 New photos go in `src/assets/photos/` as `.jpg` files and are referenced by file name without the extension. Astro resizes them and converts them to AVIF/WebP at build time.

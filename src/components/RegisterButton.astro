@@ -1,15 +1,22 @@
 ---
-import { currentEvent } from '../data/current-event';
+import { currentEvent, nextUp } from '../data/current-event';
 interface Props {
   label?: string;
   class?: string;
+  // The run this button signs up for. Left out, it's whichever run is open: the current run,
+  // or the next one once the current run's registration has closed.
+  run?: { registerUrl: string; registrationOpen: boolean };
 }
-const { label = 'Register now', class: cls } = Astro.props;
+const { class: cls } = Astro.props;
+const nextIsOpen = !currentEvent.registrationOpen && nextUp.registrationOpen;
+const run = Astro.props.run ?? (nextIsOpen ? nextUp : currentEvent);
+// A general button that signs up for the next run says so, so nobody takes it for the current one
+const label = !Astro.props.run && nextIsOpen ? `Register · ${nextUp.shortName}` : (Astro.props.label ?? 'Register now');
 ---
 
 {
-  currentEvent.registrationOpen ? (
-    <a class:list={['btn btn--cta', cls]} href={currentEvent.registerUrl} target="_blank" rel="noopener" data-magnetic>
+  run.registrationOpen ? (
+    <a class:list={['btn btn--cta', cls]} href={run.registerUrl} target="_blank" rel="noopener" data-magnetic>
       {label} <span class="arrow" aria-hidden="true">→</span>
     </a>
   ) : (

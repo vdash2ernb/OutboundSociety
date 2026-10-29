@@ -28,14 +28,13 @@ export const GET: APIRoute = ({ site: origin }) => {
 - Venue: ${ev.venue}, ${ev.address}
 - Registration fee: ${ev.fee}; ${ev.included.join('; ')}
 - Distances: ${ev.categories.map((c) => `${c.name} (${c.detail})`).join('; ')}
-- Register (Google Form): ${ev.registerUrl}
-- Registration closes: ${ev.registrationCloses}
+${ev.registrationOpen ? `- Register (Google Form): ${ev.registerUrl}\n- Registration closes: ${ev.registrationCloses}` : `- Registration closed on ${ev.registrationCloses}`}
 - ${ev.notes}
 
 ## Coming up: ${nextUp.name}
 - Date: ${nextUp.dateLabel}
 - Place: ${nextUp.place}
-- ${nextUp.blurb}
+- ${nextUp.blurb}${nextUp.registrationOpen ? `\n- Register (Google Form): ${nextUp.registerUrl}` : ''}
 
 ## Past events
 ${pastEvents.map((e) => `- [${e.fullName}](${url(`/events/${e.slug}/`)}) (${e.when}, ${e.where}): ${e.summary}`).join('\n')}

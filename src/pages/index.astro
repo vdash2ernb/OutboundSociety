@@ -5,7 +5,7 @@ import Photo from '../components/Photo.astro';
 import SplitHeading from '../components/SplitHeading.astro';
 import Marquee from '../components/Marquee.astro';
 import RegisterButton from '../components/RegisterButton.astro';
-import { currentEvent } from '../data/current-event';
+import { currentEvent, nextUp } from '../data/current-event';
 import { pastEvents, stats } from '../data/past-events';
 import { reviews } from '../data/site';
 import { currentEventSchema } from '../lib/schema';
@@ -123,7 +123,7 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
         <span class="next__tag">{currentEvent.featureTag}</span>
       </div>
       <div class="next__info">
-        <span class="eyebrow">Next run · Registration open</span>
+        <span class="eyebrow">Next run · Registration {currentEvent.registrationOpen ? 'open' : 'closed'}</span>
         <SplitHeading lines={currentEvent.headingLines} accentLast />
         <p class="lede" data-fade>{currentEvent.tagline}</p>
         <dl class="facts" data-fade>
@@ -139,10 +139,19 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
           <div><span data-s>00</span><small>Sec</small></div>
         </div>
         <div class="next__actions" data-fade>
-          <RegisterButton />
+          <RegisterButton run={currentEvent} />
           <a href={url(`/events/${currentEvent.slug}/`)} class="btn btn--ghost">Full details</a>
         </div>
-        <p class="muted small" data-fade>Registration closes {currentEvent.registrationCloses}.</p>
+        {
+          currentEvent.registrationOpen ? (
+            <p class="muted small" data-fade>Registration closes {currentEvent.registrationCloses}.</p>
+          ) : (
+            <p class="muted small" data-fade>
+              Registration closed {currentEvent.registrationCloses}.
+              {nextUp.registrationOpen && <>Signups are open for the <a class="link" href={url('/events/#coming-up')}>{nextUp.name}</a> on {nextUp.dateLabel}.</>}
+            </p>
+          )
+        }
       </div>
     </div>
   </section>

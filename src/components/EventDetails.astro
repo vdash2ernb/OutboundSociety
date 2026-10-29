@@ -37,7 +37,7 @@ import { currentEvent as ev } from '../data/current-event';
       <p class="chips">{ev.candyStations.map((c) => <span>{c}</span>)}</p>
     </div>
     <div class="details__actions" data-fade>
-      <RegisterButton label="Secure your slot" />
+      <RegisterButton run={ev} label="Secure your slot" />
       <slot />
     </div>
   </div>

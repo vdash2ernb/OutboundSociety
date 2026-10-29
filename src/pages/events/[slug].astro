@@ -52,7 +52,7 @@ const schema = past
 
 // The other runs, newest first, for "more runs" links
 const others = [
-  ...(isCurrent ? [] : [{ slug: ev.slug, name: ev.name, when: `${ev.dateLabel} · Open now`, cover: ev.poster }]),
+  ...(isCurrent ? [] : [{ slug: ev.slug, name: ev.name, when: `${ev.dateLabel} · ${ev.registrationOpen ? 'Open now' : 'Coming up'}`, cover: ev.poster }]),
   ...pastEvents.filter((e) => e.slug !== run.slug).map((e) => ({ slug: e.slug, name: e.fullName, when: `${e.when} · ${e.where}`, cover: e.cover })),
 ];
 ---
@@ -80,14 +80,14 @@ const others = [
       <nav class="crumbs" aria-label="Breadcrumb">
         <a href={url('/')}>Home</a><span aria-hidden="true">/</span><a href={url('/events/')}>Events</a><span aria-hidden="true">/</span><span aria-current="page">{run.name}</span>
       </nav>
-      <span class="eyebrow">{isCurrent ? `Now open · ${run.date}` : `Past run · ${run.date}`}</span>
+      <span class="eyebrow">{isCurrent ? `${ev.registrationOpen ? 'Now open' : 'Next run'} · ${run.date}` : `Past run · ${run.date}`}</span>
       <SplitHeading as="h1" lines={run.headingLines} accentLast />
       <p class="lede">{run.lede}</p>
       <div class="rhero__actions">
         {
           isCurrent ? (
             <>
-              <RegisterButton label={`Register · ${ev.fee}`} />
+              <RegisterButton run={ev} label={`Register · ${ev.fee}`} />
               <a href="#details" class="btn btn--ghost">See details ↓</a>
             </>
           ) : (
@@ -110,7 +110,7 @@ const others = [
             { label: 'Date', value: ev.dateLabel },
             { label: 'Venue', value: ev.venue, href: ev.mapUrl, note: ev.address },
             { label: 'Entry', value: ev.fee, note: 'Medal + post-run meal' },
-            { label: 'Register by', value: ev.registrationCloses },
+            ev.registrationOpen ? { label: 'Register by', value: ev.registrationCloses } : { label: 'Registration', value: 'Closed', note: ev.registrationCloses },
           ]
         : [
             { label: 'Date', value: run.date },
@@ -179,7 +179,7 @@ const others = [
         }
       </div>
       <div class="more__actions">
-        {isCurrent ? <RegisterButton label={`Register · ${ev.fee}`} /> : <a href={url(`/events/${ev.slug}/`)} class="btn btn--cta" data-magnetic>Join {ev.name} <span class="arrow" aria-hidden="true">→</span></a>}
+        {isCurrent ? <RegisterButton run={ev} label={`Register · ${ev.fee}`} /> : <a href={url(`/events/${ev.slug}/`)} class="btn btn--cta" data-magnetic>Join {ev.name} <span class="arrow" aria-hidden="true">→</span></a>}
         <a href={url('/events/')} class="btn btn--ghost">All events</a>
       </div>
     </div>
