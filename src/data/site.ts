@@ -1,11 +1,12 @@
 export const site = {
   name: 'Outbound Society',
   description:
-    'Outbound Society is a Cebuano non-profit that organizes inclusive, meaningful community runs in Liloan, Cebu. Every peso goes back into the next run.',
+    'Outbound Society is a Cebuano non-profit that organizes inclusive, meaningful community runs in Liloan, Cebu. Every peso goes back into the community.',
   founder: 'Roefan Jugalbot',
   address: 'Purok Ube, Catarman, Liloan, 6002 Cebu, Philippines',
   phone: '0960 598 4835',
   phoneHref: 'tel:+639605984835',
+  email: 'roe@outboundsociety.org',
   facebook: 'https://www.facebook.com/OutboundSociety/',
   maps: 'https://www.google.com/maps/place/Outbound+Society/@10.3884063,124.0022916,17z/data=!4m6!3m5!1s0x33a9bdb07ab04cff:0xed2f5efeb6e4a7ec!8m2!3d10.3884063!4d124.0022916!16s%2Fg%2F11zf5q3_rl',
   coverage: ['Liloan', 'Catarman', 'Consolacion', 'Compostela', 'Mandaue', 'Danao'],

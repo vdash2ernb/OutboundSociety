@@ -128,8 +128,8 @@ export const pastEvents = [
 export type PastEvent = (typeof pastEvents)[number];
 
 export const stats = [
-  { value: '300+', label: 'Runners at one night run' },
-  { value: '4', label: 'Community runs since Oct 2025' },
+  { value: '600+', label: 'Runners at one night run' },
+  { value: '6', label: 'Community runs since Oct 2025' },
   { value: '5.0★', label: 'Google rating' },
-  { value: '100%', label: 'Of every peso goes into the next run' },
+  { value: '100%', label: 'Of every peso goes into the community' },
 ];

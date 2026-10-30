@@ -9,12 +9,13 @@ export const GET: APIRoute = ({ site: origin }) => {
   const url = (p: string) => new URL(p, origin).toString();
   const body = `# ${site.name}
 
-> ${site.name} is a Cebuano non-profit running organization and community event organizer based in Catarman, Liloan, Cebu, Philippines. It organizes inclusive, beginner-friendly community fun runs (night runs, costume runs, birthday runs and fiesta fundraisers) for all fitness levels. Every peso earned goes back into organizing the next run.
+> ${site.name} is a Cebuano non-profit running organization and community event organizer based in Catarman, Liloan, Cebu, Philippines. It organizes inclusive, beginner-friendly community fun runs (night runs, costume runs, birthday runs and fiesta fundraisers) for all fitness levels. Every peso earned goes back into the community.
 
 ## Key facts
 - Founder: ${site.founder}
 - Address: ${site.address}
 - Phone: ${site.phone}
+- Email: ${site.email}
 - Facebook (fastest response): ${site.facebook}
 - Google Maps: ${site.maps}
 - Website: ${url('/')}

@@ -31,6 +31,7 @@ export function organization(abs: Abs, logo: string, image: string) {
     founder: { '@type': 'Person', name: site.founder },
     foundingDate: '2025',
     telephone: '+63 960 598 4835',
+    email: site.email,
     address,
     geo: { '@type': 'GeoCoordinates', latitude: 10.3884063, longitude: 124.0022916 },
     hasMap: site.maps,

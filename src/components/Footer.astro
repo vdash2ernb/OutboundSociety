@@ -36,6 +36,7 @@ import SplitHeading from './SplitHeading.astro';
       <div>
         <h2>Talk to us</h2>
         <p><a class="link" href={site.phoneHref}>{site.phone}</a></p>
+        <p><a class="link" href={`mailto:${site.email}`}>{site.email}</a></p>
         <p><a class="link" href={site.facebook} target="_blank" rel="noopener">facebook.com/OutboundSociety</a></p>
         <p class="muted small">Facebook is the fastest way to reach us about runs and schedules.</p>
       </div>
@@ -46,7 +47,7 @@ import SplitHeading from './SplitHeading.astro';
     </div>
 
     <div class="footer__bottom">
-      <span>© {new Date().getFullYear()} {site.name}. Every peso goes into the next run.</span>
+      <span>© {new Date().getFullYear()} {site.name}. Every peso goes into the community.</span>
       <span>Liloan · Catarman · Consolacion · Compostela · Mandaue · Danao</span>
     </div>
   </div>
