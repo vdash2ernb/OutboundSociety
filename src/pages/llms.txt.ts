@@ -4,6 +4,7 @@ import type { APIRoute } from 'astro';
 import { site, reviews } from '../data/site';
 import { currentEvent as ev, comingUp } from '../data/current-event';
 import { pastEvents } from '../data/past-events';
+import { news } from '../data/news';
 
 export const GET: APIRoute = ({ site: origin }) => {
   const url = (p: string) => new URL(p, origin).toString();
@@ -40,6 +41,9 @@ ${comingUp
 ## Past events
 ${pastEvents.map((e) => `- [${e.fullName}](${url(`/events/${e.slug}/`)}) (${e.when}, ${e.where}): ${e.summary}`).join('\n')}
 
+## In the news
+${news.map((n) => `- [${n.title}](${url(`/news/${n.slug}/`)}) (${n.published}): ${n.description}`).join('\n')}
+
 ## What runners say (Google reviews)
 ${reviews.map((r) => `- "${r.text}" (${r.name})`).join('\n')}
 
@@ -49,6 +53,7 @@ ${reviews.map((r) => `- "${r.text}" (${r.name})`).join('\n')}
 - [About](${url('/about/')}): mission, non-profit promise, services, founder story
 - [${ev.name}](${url(`/events/${ev.slug}/`)}): full details, schedule, registration and FAQ
 ${pastEvents.map((e) => `- [${e.fullName}](${url(`/events/${e.slug}/`)}): story and photos`).join('\n')}
+${news.map((n) => `- [${n.title}](${url(`/news/${n.slug}/`)}): news story`).join('\n')}
 `;
   return new Response(body, { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
 };

@@ -13,6 +13,7 @@ import Faq from '../../components/Faq.astro';
 import { currentEvent as ev } from '../../data/current-event';
 import { pastEvents, type PastEvent } from '../../data/past-events';
 import { faqs } from '../../data/faqs';
+import { news } from '../../data/news';
 import { site } from '../../data/site';
 import { currentEventSchema, pastEventSchema, faqSchema, breadcrumbs } from '../../lib/schema';
 import { photoUrl } from '../../lib/photo-url';
@@ -43,6 +44,10 @@ const run = {
   gallery: galleryRun.gallery,
   galleryAlt: `${galleryRun.fullName}, a community run in Liloan, Cebu`,
 };
+
+// Highlights: short clips from the run, and news stories about it
+const clips = past && 'clips' in past ? past.clips : [];
+const stories = news.filter((n) => n.run === run.slug);
 
 const abs = (p: string) => new URL(p, Astro.site).toString();
 const path = `/events/${run.slug}/`;
@@ -109,8 +114,12 @@ const others = [
         ? [
             { label: 'Date', value: ev.dateLabel },
             { label: 'Venue', value: ev.venue, href: ev.mapUrl, note: ev.address },
-            { label: 'Entry', value: ev.fee, note: 'Medal + post-run meal' },
-            ev.registrationOpen ? { label: 'Register by', value: ev.registrationCloses } : { label: 'Registration', value: 'Closed', note: ev.registrationCloses },
+            { label: 'Entry', value: ev.fee, note: ev.feeNote },
+            ev.registrationOpen
+              ? ev.registrationCloses
+                ? { label: 'Register by', value: ev.registrationCloses }
+                : { label: 'Registration', value: 'Open', note: ev.registerNote }
+              : { label: 'Registration', value: 'Closed', note: ev.registrationCloses },
           ]
         : [
             { label: 'Date', value: run.date },
@@ -131,6 +140,38 @@ const others = [
       {run.story.map((para, i) => <p class:list={[i === 0 ? 'lede' : 'muted']} data-fade>{para}</p>)}
     </div>
   </section>
+
+  {
+    (clips.length > 0 || stories.length > 0) && (
+      <section class="section wrap highlights" aria-labelledby="highlights-title">
+        <span class="eyebrow" id="highlights-title">Highlights</span>
+        <div class="highlights__grid">
+          {clips.map((c) => (
+            <figure class="hcard" data-fade>
+              <video class="hcard__video" src={url(`/video/${c.video}.mp4`)} poster={url(`/video/${c.video}.jpg`)} muted loop playsinline autoplay preload="metadata" aria-label={c.title} />
+              <figcaption>
+                <span class="eyebrow">{c.tag}</span>
+                <h3>{c.title}</h3>
+                <p class="muted">{c.text}</p>
+                <a class="link" href={c.link} target="_blank" rel="noopener">Watch with sound on Facebook ↗</a>
+              </figcaption>
+            </figure>
+          ))}
+          {stories.map((s) => (
+            <a class="hcard hcard--story" href={url(`/news/${s.slug}/`)} data-fade>
+              <Photo name={s.cover} alt={s.coverAlt} sizes="(max-width: 900px) 100vw, 40vw" />
+              <div>
+                <span class="eyebrow">In the news</span>
+                <h3>{s.title}</h3>
+                <p class="muted">{s.description}</p>
+                <span class="link">Read the story →</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      </section>
+    )
+  }
 
   {
     isCurrent && (
@@ -283,6 +324,59 @@ const others = [
     max-width: 44ch;
   }
 
+  .highlights {
+    padding-top: 0;
+    display: grid;
+    gap: clamp(24px, 3vw, 40px);
+  }
+  .highlights__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .hcard {
+    margin: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+    gap: clamp(16px, 2vw, 28px);
+    align-items: center;
+    padding: clamp(14px, 1.6vw, 20px);
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: var(--radius, 20px);
+    text-decoration: none;
+  }
+  .hcard__video,
+  .hcard :global(.media) {
+    width: 100%;
+    aspect-ratio: 9 / 16;
+    object-fit: cover;
+    border-radius: calc(var(--radius, 20px) - 6px);
+    background: #000;
+  }
+  .hcard--story :global(.media) {
+    aspect-ratio: 2 / 3;
+  }
+  .hcard figcaption,
+  .hcard > div {
+    display: grid;
+    gap: 12px;
+    justify-items: start;
+  }
+  .hcard h3 {
+    font-size: clamp(26px, 2.4vw, 38px);
+    transition: color 0.3s;
+  }
+  .hcard p {
+    margin: 0;
+  }
+  .hcard .link {
+    font-weight: 700;
+  }
+  .hcard--story:hover h3 {
+    color: var(--orange);
+  }
+
   .gallery {
     padding-top: 0;
   }
@@ -335,6 +429,11 @@ const others = [
     gap: 12px;
   }
 
+  @media (max-width: 1100px) {
+    .highlights__grid {
+      grid-template-columns: 1fr;
+    }
+  }
   @media (max-width: 900px) {
     .story {
       grid-template-columns: 1fr;

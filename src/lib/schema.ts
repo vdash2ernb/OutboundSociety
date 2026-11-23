@@ -2,6 +2,7 @@
 import { site } from '../data/site';
 import { currentEvent as ev, type UpcomingRun } from '../data/current-event';
 import { pastEvents, type PastEvent } from '../data/past-events';
+import type { NewsItem } from '../data/news';
 
 type Abs = (path: string) => string;
 
@@ -102,6 +103,23 @@ export function upcomingSchema(abs: Abs, run: UpcomingRun, image: string) {
       ? { '@type': 'VirtualLocation', url: run.link }
       : { '@type': 'Place', name: 'Liloan, Cebu', address: { '@type': 'PostalAddress', addressLocality: 'Liloan', addressRegion: 'Cebu', addressCountry: 'PH' } },
     organizer: orgRef(abs),
+  };
+}
+
+/** A news story about one of our runs */
+export function articleSchema(abs: Abs, item: NewsItem, images: string[]) {
+  return {
+    '@type': 'NewsArticle',
+    '@id': abs(`/news/${item.slug}/#article`),
+    headline: item.title,
+    description: item.description,
+    image: images,
+    datePublished: item.published,
+    url: abs(`/news/${item.slug}/`),
+    inLanguage: 'en-PH',
+    author: orgRef(abs),
+    publisher: orgRef(abs),
+    ...(item.run ? { about: { '@id': abs(`/events/${item.run}/#event`) } } : {}),
   };
 }
 

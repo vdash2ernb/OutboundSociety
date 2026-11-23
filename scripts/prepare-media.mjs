@@ -90,6 +90,9 @@ const photos = [
   ['hnr26-pumpkin', h26('73')],
   ['hnr26-trick-or-treat', h26('76')],
   ['hnr26-tinkerbell', h26('79')],
+  // The viral "Duster King" photos: Iskwad's (shared by DotTv Nationwide) and Fotopedia's (shared by Balitang Bisdak)
+  ['duster-king', `${FB}/duster-king/iskwad-album.jpg`],
+  ['duster-king-fotopedia', `${FB}/duster-king/balitang-bisdak.jpg`],
   // Upcoming
   ['pit-senyor-poster', tl(270)],
   ['santa-run-poster', `${FB}/posters-2026-11/santa-run-2026-poster.jpg`],

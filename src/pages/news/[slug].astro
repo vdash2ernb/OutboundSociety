@@ -1,0 +1,241 @@
+---
+// One page per story: /news/<slug>/. Content comes from src/data/news.ts.
+import type { GetStaticPaths } from 'astro';
+import Base from '../../layouts/Base.astro';
+import Photo from '../../components/Photo.astro';
+import SplitHeading from '../../components/SplitHeading.astro';
+import { news, type NewsItem } from '../../data/news';
+import { pastEvents } from '../../data/past-events';
+import { currentEvent as ev } from '../../data/current-event';
+import { site } from '../../data/site';
+import { articleSchema, breadcrumbs } from '../../lib/schema';
+import { photoUrl } from '../../lib/photo-url';
+import { url } from '../../lib/url';
+
+export const getStaticPaths = (() => news.map((item) => ({ params: { slug: item.slug }, props: { item } }))) satisfies GetStaticPaths;
+
+const { item } = Astro.props as { item: NewsItem };
+const run = pastEvents.find((e) => e.slug === item.run);
+const dateLabel = new Date(`${item.published}T12:00:00+08:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
+const abs = (p: string) => new URL(p, Astro.site).toString();
+const path = `/news/${item.slug}/`;
+const images = await Promise.all([item.cover, ...item.body.flatMap((b) => ('photo' in b ? [b.photo] : []))].map((n) => photoUrl(n, Astro.site)));
+---
+
+<Base
+  title={`${item.title} | ${site.name}`}
+  description={item.description}
+  image={item.cover}
+  imageAlt={item.coverAlt}
+  schema={[
+    articleSchema(abs, item, images),
+    breadcrumbs(abs, [
+      { name: 'Events', path: '/events/' },
+      ...(run ? [{ name: run.fullName, path: `/events/${run.slug}/` }] : []),
+      { name: item.title, path },
+    ]),
+  ]}
+>
+  <article>
+    <!-- HEADER -->
+    <header class="wrap ahead">
+      <div class="ahead__text">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={url('/')}>Home</a><span aria-hidden="true">/</span><a href={url('/events/')}>Events</a>
+          {run && <><span aria-hidden="true">/</span><a href={url(`/events/${run.slug}/`)}>{run.fullName}</a></>}
+        </nav>
+        <span class="eyebrow">In the news · {dateLabel}</span>
+        <SplitHeading as="h1" lines={item.headingLines} accentLast />
+        <p class="lede">{item.dek}</p>
+      </div>
+      <figure class="ahead__photo">
+        <Photo name={item.cover} alt={item.coverAlt} sizes="(max-width: 900px) 100vw, 40vw" loading="eager" />
+        <figcaption>{item.coverCredit}</figcaption>
+      </figure>
+    </header>
+
+    <!-- BODY -->
+    <div class="wrap abody">
+      {
+        item.body.map((b, i) =>
+          'h' in b ? (
+            <h2 class="abody__h">{b.h}</h2>
+          ) : 'photo' in b ? (
+            <figure class="abody__photo" data-fade>
+              <Photo name={b.photo} alt={b.alt} sizes="(max-width: 700px) 100vw, 560px" />
+              <figcaption>{b.credit}</figcaption>
+            </figure>
+          ) : 'quote' in b ? (
+            <blockquote class="abody__quote" data-fade>
+              <p class="display">“{b.quote}”</p>
+              <cite>{b.cite}</cite>
+            </blockquote>
+          ) : (
+            <p class:list={[i === 0 ? 'lede' : 'muted']} data-fade>{b.p}</p>
+          )
+        )
+      }
+
+      <aside class="sources" data-fade>
+        <span class="eyebrow">Where it ran</span>
+        <ul>
+          {item.sources.map((s) => <li><a class="link" href={s.href} target="_blank" rel="noopener">{s.name} ↗</a></li>)}
+        </ul>
+      </aside>
+    </div>
+  </article>
+
+  <!-- NEXT STEPS -->
+  <section class="section more">
+    <div class="wrap more__inner">
+      <span class="eyebrow">Keep going</span>
+      <SplitHeading lines={['Come run', 'with us.']} accentLast />
+      <div class="more__actions">
+        {run && <a href={url(`/events/${run.slug}/`)} class="btn btn--ghost">{run.fullName} photos <span class="arrow" aria-hidden="true">→</span></a>}
+        <a href={url(`/events/${ev.slug}/`)} class="btn btn--cta" data-magnetic>Join {ev.name} <span class="arrow" aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ahead {
+    display: grid;
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: clamp(32px, 6vw, 100px);
+    align-items: end;
+    padding-top: clamp(110px, 16vh, 170px);
+    padding-bottom: clamp(48px, 7vw, 100px);
+  }
+  .ahead__text {
+    display: grid;
+    gap: clamp(14px, 2.6vh, 24px);
+    justify-items: start;
+  }
+  .ahead__text :global(h1) {
+    font-size: clamp(48px, min(8.5vw, 13vh), 160px);
+    line-height: 0.88;
+  }
+  .ahead__text .lede {
+    max-width: 46ch;
+    margin: 0;
+  }
+  .ahead__photo {
+    margin: 0;
+  }
+  .ahead__photo :global(.media) {
+    aspect-ratio: 4 / 5;
+    max-height: 78vh;
+  }
+  figcaption {
+    margin-top: 10px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .crumbs a {
+    display: inline-block;
+    padding-block: 6px;
+    text-decoration: none;
+    transition: color 0.3s;
+  }
+  .crumbs a:hover {
+    color: var(--orange);
+  }
+
+  .abody {
+    display: grid;
+    gap: 24px;
+    max-width: calc(68ch + 2 * var(--gutter));
+    padding-bottom: clamp(80px, 10vw, 160px);
+  }
+  .abody p {
+    margin: 0;
+  }
+  .abody .muted {
+    font-size: clamp(17px, 1.25vw, 20px);
+    line-height: 1.65;
+  }
+  .abody__h {
+    font-size: clamp(32px, 3.4vw, 52px);
+    margin: 32px 0 0;
+  }
+  .abody__photo {
+    margin: 16px 0;
+  }
+  .abody__photo :global(.media) {
+    aspect-ratio: 2 / 3;
+    max-width: 560px;
+  }
+  .abody__quote {
+    margin: 24px 0;
+    padding-left: 24px;
+    border-left: 3px solid var(--orange);
+  }
+  .abody__quote p {
+    font-size: clamp(26px, 2.6vw, 40px);
+    line-height: 1.05;
+  }
+  .abody__quote cite {
+    display: block;
+    margin-top: 14px;
+    font-style: normal;
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .sources {
+    margin-top: 32px;
+    padding-top: 32px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    gap: 14px;
+  }
+  .sources ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 28px;
+    font-weight: 700;
+  }
+
+  .more {
+    background: var(--bg-2);
+  }
+  .more__inner {
+    display: grid;
+    gap: 28px;
+    justify-items: start;
+  }
+  .more__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  @media (max-width: 900px) {
+    .ahead {
+      grid-template-columns: 1fr;
+      align-items: start;
+    }
+  }
+  @media (max-width: 480px) {
+    .more__actions .btn {
+      white-space: normal;
+      height: auto;
+      min-height: var(--h);
+      padding-block: 14px;
+    }
+  }
+</style>

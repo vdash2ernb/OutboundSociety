@@ -46,6 +46,16 @@ export const pastEvents = [
       'hnr26-nun',
       'hnr26-tinkerbell',
     ],
+    // Short silent clips in public/video, shown as "Highlights" on the run page
+    clips: [
+      {
+        video: 'hnr26-best-costume-kids',
+        tag: 'Best in Costume · Kids',
+        title: 'Our littlest Catrina',
+        text: 'In full Catrina face paint for Día de los Muertos, she won Best in Costume in the kids’ category.',
+        link: 'https://www.facebook.com/reel/1482743460372390/',
+      },
+    ],
   },
   {
     slug: 'cielos-happy-pace-2026',
