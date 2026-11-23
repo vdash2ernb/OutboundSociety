@@ -59,16 +59,27 @@ export const currentEvent = {
     'Every registration helps raise funds to replace the ceiling of the Señor Santo Niño Chapel. Race-day updates are posted by the Suba Sto. Niño Association on Facebook.',
   // Kids' candy stations (Haunted Night Run only). Hidden when empty.
   candyStations: [] as string[],
+  // Logos from the "Our valued sponsors" poster (updated Nov 22, 2026), plus earlier partners
   sponsors: [
     'Little Santorini Mountain Resort',
     'Bakeria Box',
     'BIG APPLE by the bay',
     'Sisterfields Coffee & Pastry',
+    'vivo',
+    'MJ Royal Enterprises',
     'BLUETTI Power Hub',
     'KentLloyd Autoparts',
+    'Supremacy International',
     'Wise Choice Supplements Cebu',
+    'Angela Hair and Nail Salon by Beth',
+    'Japal Food Manufacturing',
+    'Calamansi Zero',
     'ZM Suba Best Lechon Belly',
   ],
+  // The sponsor poster, shown on the run page. Leave empty to hide it.
+  sponsorPoster: 'pit-senyor-sponsors',
+  sponsorPosterAlt:
+    'Pit Señor Fiesta Run Suba 2027 sponsors: Wise Choice, MJ Royal Enterprises, ZM Suba Best Lechon Belly, Sisterfields Coffee & Pastry, KentLloyd Autoparts, Supremacy International, Angela Hair and Nail Salon by Beth, Calamansi Zero, Little Santorini Mountain Resort, vivo and Japal Food Manufacturing',
 };
 
 // The runs after this one, soonest first. Shown under "Coming up" on the Events page.

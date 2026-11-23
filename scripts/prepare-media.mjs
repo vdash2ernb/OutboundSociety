@@ -95,6 +95,7 @@ const photos = [
   ['duster-king-fotopedia', `${FB}/duster-king/balitang-bisdak.jpg`],
   // Upcoming
   ['pit-senyor-poster', tl(270)],
+  ['pit-senyor-sponsors', `${FB}/posters-2026-11/pit-senyor-2027-sponsors.jpg`],
   ['santa-run-poster', `${FB}/posters-2026-11/santa-run-2026-poster.jpg`],
 ];
 
