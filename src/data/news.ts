@@ -34,6 +34,9 @@ export const news = [
       {
         p: 'The cylinder was a real one, borrowed for the night from Phoenix Super LPG Liloan & Compostela and Brew & Blend Cafe, two of the run’s 34 sponsors. Carrying it for 5 km, barefoot, is a workout we do not recommend trying at home.',
       },
+      {
+        p: 'Phoenix Super LPG Liloan shared the photos on their own page two days later, calling the run their way of giving back to the community and encouraging a fun, healthy and active lifestyle. Fair to say their cylinder got more attention than any billboard.',
+      },
       { h: 'Why it matters to us' },
       {
         p: 'We started Outbound Society to make runs that are about the people who show up, not the podium. A runner turning a costume run into a joke the whole country got is exactly that.',
@@ -44,13 +47,14 @@ export const news = [
         cite: 'Outbound Society, after the run made the news',
       },
       {
-        p: 'Thank you to the Duster King for the laughs, to Fotopedia, Iskwad and MoTo-JeT Shots for the photos, and to Balitang Bisdak, DotTv Nationwide and Liloan Beam for telling the story. See you at the next start line.',
+        p: 'Thank you to the Duster King for the laughs, to Fotopedia, Iskwad and MoTo-JeT Shots for the photos, to Balitang Bisdak, DotTv Nationwide and Liloan Beam for telling the story, and to Phoenix Super LPG Liloan for lending the star of the show. See you at the next start line.',
       },
     ],
     // Where the story ran. Links open on Facebook.
     sources: [
       { name: 'Balitang Bisdak', href: 'https://www.facebook.com/photo/?fbid=1567087795453542&set=a.600935752068756' },
       { name: 'DotTv Nationwide', href: 'https://www.facebook.com/dottvlive/posts/pfbid0AHJHkStH5gZSSdP5Zmmxsnhx173NmtDMQEttKtQfWCHT4MHvqnfvfDakpxnwTjJwl' },
+      { name: 'Phoenix Super LPG Liloan', href: 'https://www.facebook.com/phoenixsuperlpgliloan/posts/pfbid02jxQpMjfYcRjgkTzDhu5ttPf2LKXiTD2Ygoq6GZ8SxJTL1eVtVMcpg5eNo4zp3EjKl' },
       { name: 'Outbound Society on Facebook', href: 'https://www.facebook.com/OutboundSociety/posts/pfbid02LnugXkZBeZ2aWWPW84rqzttxVuHsxCpmwogffoiMn5Gf1uZdeGkgmAxMd1LGvBMcl' },
     ],
   },
