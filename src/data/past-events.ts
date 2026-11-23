@@ -2,6 +2,52 @@
 // Each run gets its own page at /events/<slug>/ built from these fields.
 export const pastEvents = [
   {
+    slug: 'haunted-night-run-2026',
+    date: '2026-11-07',
+    name: 'Haunted Night Run',
+    fullName: 'Haunted Night Run 2026',
+    headingLines: ['Haunted', 'Night Run', '2026'],
+    when: 'November 2026',
+    where: 'Bakeria Box, Liloan',
+    summary:
+      'Year two, and a record: 548 runners, a kids’ Trick-or-Treat Run past candy stations, and a Duster King who ran with an LPG tank.',
+    description:
+      'Haunted Night Run 2026: a record 548 runners at Bakeria Box, Liloan, Cebu. Kids 3 km Trick-or-Treat Run, adults 5 km, costumes and raffle prizes. Photos inside.',
+    story: [
+      'The Haunted Night Run came back on November 7, 2026, and Liloan turned up in force. 548 runners lined up at Bakeria Box in Bajac, the biggest turnout the run has had, and local news called it record-breaking.',
+      'Kids ran a 3 km Trick-or-Treat Run past candy stations hosted by Liloan businesses and went home with treats and loot bags. Adults took the 5 km night route. The costumes were wilder than ever: witches, ghosts, a Catrina, fairies, a nun or two, and the Duster King, who ran the route carrying an LPG tank and went viral for it.',
+      'Every finisher got a medal and a meal from The Bakeria, and 34 sponsors filled a raffle so long it took days to post all the winners. Thank you to everyone who ran, volunteered, sponsored and cheered. Photos by Iskwad.',
+    ],
+    cover: 'hnr26-warmup',
+    photos: ['hnr26-catrina', 'hnr26-joy', 'hnr26-fairy', 'hnr26-thumbs', 'hnr26-witch', 'hnr26-kids', 'hnr26-nun', 'hnr26-bakeria'],
+    gallery: [
+      'hnr26-warmup',
+      'hnr26-catrina',
+      'hnr26-crew',
+      'hnr26-fairy',
+      'hnr26-scream',
+      'hnr26-joy',
+      'hnr26-bakeria',
+      'hnr26-witch',
+      'hnr26-zombie',
+      'hnr26-ghost',
+      'hnr26-kids',
+      'hnr26-thumbs',
+      'hnr26-hat',
+      'hnr26-duo',
+      'hnr26-pumpkin',
+      'hnr26-costumes',
+      'hnr26-kid',
+      'hnr26-team',
+      'hnr26-trick-or-treat',
+      'hnr26-medals',
+      'hnr26-catrina-pair',
+      'hnr26-finishers',
+      'hnr26-nun',
+      'hnr26-tinkerbell',
+    ],
+  },
+  {
     slug: 'cielos-happy-pace-2026',
     date: '2026-08-29', // from the event posters
     name: "Cielo's Happy Pace",
@@ -100,7 +146,7 @@ export const pastEvents = [
     story: [
       'This is where Outbound Society started. On Halloween night 2025, more than 300 runners lined up at Bakeria Box in Bajac, Liloan for our first ever community run.',
       'Plenty of them came in costume: dinosaurs, witches, skeletons, capes, a pumpkin or two, and one very fast queen. Adults took the night route through Liloan while the kids ran a route of their own.',
-      'Every finisher went home with a medal, and the night proved what we hoped: Liloan wanted a run that was about showing up and having fun together. The Haunted Night Run returns on November 7, 2026.',
+      'Every finisher went home with a medal, and the night proved what we hoped: Liloan wanted a run that was about showing up and having fun together. The Haunted Night Run returned on November 7, 2026, with 548 runners.',
     ],
     cover: 'hnr25-group',
     photos: ['hnr25-dino', 'hnr25-capes', 'hnr25-jump', 'hnr25-skeletons', 'hnr25-alien', 'hnr25-queen', 'hnr25-team', 'hnr25-medals'],

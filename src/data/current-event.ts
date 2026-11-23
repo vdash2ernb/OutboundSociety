@@ -4,110 +4,113 @@
 // ─────────────────────────────────────────────────────────────
 
 export const currentEvent = {
-  name: 'Haunted Night Run 2026',
+  name: 'Pit Señor Fiesta Run 2027',
   // The run's own page lives at /events/<slug>/
-  slug: 'haunted-night-run-2026',
+  slug: 'pit-senyor-fiesta-run-2027',
   // How the name breaks across lines in the big headings
-  headingLines: ['Haunted', 'Night Run', '2026'],
-  tagline: 'The night is calling. Will you answer?',
+  headingLines: ['Pit Señor', 'Fiesta Run', '2027'],
+  tagline: 'Start 2027 with faith, fitness and purpose.',
+  // One or two sentences under the big heading on the Events page and the run's page
+  heroLede: 'Run 3 km or 10 km through Suba, stay for the lechon, and help rebuild the Señor Santo Niño Chapel.',
   // For search results and social shares (keep under ~160 characters)
   description:
-    "Haunted Night Run 2026: Nov 7 at Bakeria Box, Liloan, Cebu. Kids 3 km Trick-or-Treat Run and adults 5 km. ₱180 with medal and meal. Register online.",
+    'Pit Señor Fiesta Run 2027: Jan 3 in Sitio Suba, Poblacion, Liloan, Cebu. 3 km ₱350 or 10 km ₱450, with lechon, raffle and cash prizes. Register online.',
   // A few short paragraphs for the run's page
   story: [
-    'The Haunted Night Run is back. Our first ever run brought 300+ runners in costume to Bakeria Box on Halloween night 2025. Year two brings a 3 km Trick-or-Treat Run for kids, a 5 km night run for adults, and a whole program before the gun starts.',
-    'Kids collect treats from candy stations run by Liloan businesses along their route. Adults take on the streets of Liloan after dark. Everyone who finishes gets a medal and a post-run meal from The Bakeria, and stays for 100+ raffle prizes and the Best in Costume awards.',
-    'Costumes are optional, fast legs are optional. Walk, jog or run: every finisher counts. And like every Outbound Society run, every peso of your registration goes back into the community.',
+    "Our first run of 2027 is a fiesta run. On January 3, we're running through Sitio Suba in Poblacion, Liloan for the Pit Señor Fiesta Run, organized with the Suba Sto. Niño Association.",
+    'Every registration helps raise funds to replace the ceiling of the Señor Santo Niño Chapel in Suba. Pick the 3 km fun run or take on the 10 km, and race for cash prizes if you want to: the top 3 men and women in each distance win up to ₱3,000.',
+    'After the finish there is post-run lechon and a raffle with prizes from our sponsors. Walk, jog or run: every finisher counts. Viva Pit Señor!',
   ],
-  // Photos from last year's run, shown on this run's page
-  galleryFrom: 'haunted-night-run-2025',
-  // ISO date + local start time (Philippine time, UTC+8). Used for the countdown.
-  startsAt: '2026-11-07T19:00:00+08:00',
-  endsAt: '2026-11-07T23:00:00+08:00', // for search engines' event listings
-  registrationOpens: '2026-09-08T00:00:00+08:00',
-  registrationClosesAt: '2026-10-28T23:59:00+08:00',
-  dateLabel: 'November 7, 2026',
-  venue: 'Bakeria Box',
-  address: 'Bajac, Liloan, Cebu',
-  mapUrl: 'https://www.google.com/maps/search/?api=1&query=Bakeria+Box+Bajac+Liloan+Cebu',
-  fee: '₱180',
-  registerUrl: 'https://forms.gle/w1sueWBvCA7E2ENM6',
-  registrationCloses: 'October 28, 2026',
+  // Photos from a past run, shown on this run's page until race day
+  galleryFrom: 'haunted-night-run-2026',
+  // Race day (Philippine time, UTC+8). Used for the countdown and search engines' event listings.
+  // The gun-start time hasn't been announced yet, so the countdown runs to the start of the day.
+  date: '2027-01-03',
+  startsAt: '2027-01-03T00:00:00+08:00',
+  registrationOpens: '2026-10-29T00:00:00+08:00',
+  // Leave both empty while there is no announced deadline
+  registrationClosesAt: '',
+  registrationCloses: '',
+  dateLabel: 'January 3, 2027',
+  venue: 'Sitio Suba',
+  address: 'Poblacion, Liloan, Cebu',
+  mapUrl: 'https://www.google.com/maps/search/?api=1&query=Sitio+Suba+Poblacion+Liloan+Cebu',
+  fee: 'From ₱350',
+  price: '350', // lowest entry fee in pesos, for search engines
+  feeNote: '3 km ₱350 · 10 km ₱450',
+  distances: '3 km · 10 km',
+  registerUrl: 'https://forms.gle/oJAswEfAtsa95upa9',
+  registerNote: 'Register online, or onsite at BIG APPLE by the bay.',
   // Set to false once registration closes to swap the button for "Registration closed".
-  registrationOpen: false,
-  poster: 'hnr26-poster', // file name in src/assets/photos (without .jpg)
-  heroPhoto: 'hnr25-group', // wide photo behind the Events page header
-  featurePhoto: 'hnr25-capes', // portrait photo beside the event on the Home page
-  featurePhotoAlt: 'Runners in Halloween costumes with their medals at the Haunted Night Run 2025',
-  featureTag: 'Last year · 300+ runners',
-  schedule: [
-    { time: '7:00 PM', label: 'Program starts' },
-    { time: '8:00 PM', label: 'Gun start: Kids 3 km Trick-or-Treat Run' },
-    { time: '9:00 PM', label: 'Gun start: Adults 5 km Run' },
-  ],
+  registrationOpen: true,
+  poster: 'pit-senyor-poster', // file name in src/assets/photos (without .jpg)
+  heroPhoto: 'hnr26-crew', // wide photo behind the Events page header
+  featurePhoto: 'hnr26-joy', // portrait photo beside the event on the Home page
+  featurePhotoAlt: 'A runner celebrating at the Haunted Night Run 2026',
+  featureTag: 'Our last run · 548 runners',
+  // Race-day program. Leave empty until it's announced (the block is hidden when empty).
+  schedule: [] as { time: string; label: string }[],
   categories: [
-    { name: 'Kids 3 km', detail: 'Trick-or-Treat Run with candy stations along the route' },
-    { name: 'Adults 5 km', detail: 'Night run through the streets of Liloan' },
+    { name: '3 km', detail: '₱350. Fun run for every age. Top 3 men and women win ₱2,000, ₱1,500 and ₱1,000.' },
+    { name: '10 km', detail: '₱450. Top 3 men and women win ₱3,000, ₱2,000 and ₱1,000.' },
   ],
-  included: [
-    "Finisher's medal",
-    'Post-run meal from The Bakeria',
-    'Entry to 100+ raffle prizes',
-    'Free loot bag for the first 100 kids',
-    'Best in Costume cash prizes (Kids, Adult, Senior)',
-    'Top 1 prize package: plaque, 2 kg rice, foot spa',
-  ],
-  notes: 'Costumes are not required. Come in comfortable running attire and enjoy the night.',
-  candyStations: [
-    'Bakeria Box',
-    "Chikito's Unlimited Korean Chicken",
-    'Verdant Misto Cafe',
-    'BIG APPLE by the bay',
-    'Angela Hair & Nail Salon by Beth',
-    'Kurairen Pasalubong',
-    'Skylun Restaurant',
-    'FERC Fuels Liloan',
-    'JJ&M Sugbahanan Restobar',
-    'Dr. Dirk Yuson Dental Clinic',
-    'Liloan Event Space',
-  ],
+  included: ['Race bib', "Finisher's medal", 'Post-run lechon', 'Raffle entry'],
+  notes:
+    'Every registration helps raise funds to replace the ceiling of the Señor Santo Niño Chapel. Race-day updates are posted by the Suba Sto. Niño Association on Facebook.',
+  // Kids' candy stations (Haunted Night Run only). Hidden when empty.
+  candyStations: [] as string[],
   sponsors: [
+    'Little Santorini Mountain Resort',
     'Bakeria Box',
-    'Skylun Restaurant',
     'BIG APPLE by the bay',
-    'Cafe 8020',
-    'Liloan Event Space',
-    'FERC Fuels',
-    'Espressooh Nails Spa Cafe',
-    "Chen's Creations",
-    "AVA's Catering",
-    'Calamansi Zero',
-    'Phoenix Super LPG',
-    'Conquer Fitness & Gym',
-    "FatBum's Burgers",
-    'Japal Food Manufacturing',
-    'FantasyWorld PH',
-    'Sabon Station Cebu',
-    'Quezych LINE',
-    'Yalu Shop',
-    'Kurairen Dried Mangoes',
-    'JJ&M Sugbahanan Restobar',
+    'Sisterfields Coffee & Pastry',
+    'BLUETTI Power Hub',
+    'KentLloyd Autoparts',
+    'Wise Choice Supplements Cebu',
+    'ZM Suba Best Lechon Belly',
   ],
 };
 
-// The run after this one. Shown as "Coming up" on the Events page.
-// Once its registration opens and the current run's has closed, the general Register
-// buttons (menu, footer, home hero) sign people up for this run instead.
-export const nextUp = {
-  name: 'Pit Señor Fiesta Run',
-  shortName: 'Pit Señor', // for button labels
-  registerUrl: 'https://forms.gle/7jVeCPXSEvYX2gEw8',
-  registrationOpen: true,
-  dateLabel: 'January 3, 2027',
-  date: '2027-01-03',
-  place: 'Sitio Suba, Poblacion, Liloan, Cebu',
-  blurb:
-    'Start 2027 moving. Every registration helps raise funds to replace the ceiling of the Señor Santo Niño Chapel. Raffle prizes and cash rewards for top finishers.',
-  poster: 'pit-senyor-poster',
-  link: 'https://www.facebook.com/OutboundSociety/',
-};
+// The runs after this one, soonest first. Shown under "Coming up" on the Events page.
+// When the current run's registration closes, the general Register buttons (menu, footer,
+// home hero) sign people up for the first of these whose registration is open.
+export const comingUp = [
+  {
+    name: 'Virtual Santa Run 2026',
+    shortName: 'Santa Run', // for button labels
+    headingLines: ['Virtual', 'Santa Run'],
+    registerUrl: '',
+    registrationOpen: false,
+    dateLabel: 'December 25, 2026',
+    date: '2026-12-25',
+    virtual: true,
+    place: 'Anywhere in the world · 10 km · Free',
+    blurb:
+      "A free 10 km Christmas run. Runners in different countries run on the same day, at the same time, and claim an official virtual race bib. The sign-up form is coming soon.",
+    poster: 'santa-run-poster',
+    posterAlt: 'Virtual Santa Run poster: a running Santa Claus with a race bib',
+    link: 'https://strava.app.link/9qbX0VCni8b',
+    linkLabel: 'Join the Strava group',
+    soonNote: 'Registration and race-bib details are posted in our Strava group.',
+  },
+  {
+    name: 'Heart & Sole 2027',
+    shortName: 'Heart & Sole',
+    headingLines: ['Heart & Sole', '2027'],
+    registerUrl: '',
+    registrationOpen: false,
+    dateLabel: 'February 14, 2027',
+    date: '2027-02-14',
+    virtual: false,
+    place: 'Liloan, Cebu · 1 km or 5 km · ₱150',
+    blurb:
+      "Our Valentine's run is back. ₱150 gets you a race bib and medal, Valentine's sweets, official event photos and a raffle entry. The first 30 registrants get a Valentine's gift from Chen's Creations.",
+    poster: 'hs26-medals',
+    posterAlt: 'Heart & Sole medals from the 2026 run',
+    link: 'https://www.facebook.com/OutboundSociety/',
+    linkLabel: 'Get notified on Facebook',
+    soonNote: 'Registration opens December 1, 2026 at 9:00 AM.',
+  },
+];
+
+export type UpcomingRun = (typeof comingUp)[number];

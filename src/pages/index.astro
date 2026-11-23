@@ -5,7 +5,7 @@ import Photo from '../components/Photo.astro';
 import SplitHeading from '../components/SplitHeading.astro';
 import Marquee from '../components/Marquee.astro';
 import RegisterButton from '../components/RegisterButton.astro';
-import { currentEvent, nextUp } from '../data/current-event';
+import { currentEvent, comingUp } from '../data/current-event';
 import { pastEvents, stats } from '../data/past-events';
 import { reviews } from '../data/site';
 import { currentEventSchema } from '../lib/schema';
@@ -30,6 +30,7 @@ const gallery = [
   { name: 'cielo26-dad', alt: 'A father and daughter after the run' },
   { name: 'hnr25-queen', alt: 'A runner dressed as a queen at the Haunted Night Run' },
 ];
+const nextOpen = comingUp.find((r) => r.registrationOpen);
 const abs = (p: string) => new URL(p, Astro.site).toString();
 const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPhoto].map((n) => photoUrl(n, Astro.site)));
 ---
@@ -129,10 +130,10 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
         <dl class="facts" data-fade>
           <div><dt>When</dt><dd>{currentEvent.dateLabel}</dd></div>
           <div><dt>Where</dt><dd>{currentEvent.venue}, {currentEvent.address}</dd></div>
-          <div><dt>Entry</dt><dd>{currentEvent.fee} · medal + meal</dd></div>
-          <div><dt>Distances</dt><dd>Kids 3 km · Adults 5 km</dd></div>
+          <div><dt>Entry</dt><dd>{currentEvent.feeNote}</dd></div>
+          <div><dt>Distances</dt><dd>{currentEvent.distances}</dd></div>
         </dl>
-        <div class="countdown" data-countdown={currentEvent.startsAt} data-fade aria-label="Countdown to gun start">
+        <div class="countdown" data-countdown={currentEvent.startsAt} data-fade aria-label="Countdown to race day">
           <div><span data-d>00</span><small>Days</small></div>
           <div><span data-h>00</span><small>Hrs</small></div>
           <div><span data-m>00</span><small>Min</small></div>
@@ -144,11 +145,11 @@ const eventImages = await Promise.all([currentEvent.poster, currentEvent.heroPho
         </div>
         {
           currentEvent.registrationOpen ? (
-            <p class="muted small" data-fade>Registration closes {currentEvent.registrationCloses}.</p>
+            <p class="muted small" data-fade>{currentEvent.registrationCloses ? `Registration closes ${currentEvent.registrationCloses}.` : currentEvent.registerNote}</p>
           ) : (
             <p class="muted small" data-fade>
               Registration closed {currentEvent.registrationCloses}.
-              {nextUp.registrationOpen && <>Signups are open for the <a class="link" href={url('/events/#coming-up')}>{nextUp.name}</a> on {nextUp.dateLabel}.</>}
+              {nextOpen && <>Signups are open for the <a class="link" href={url('/events/#coming-up')}>{nextOpen.name}</a> on {nextOpen.dateLabel}.</>}
             </p>
           )
         }

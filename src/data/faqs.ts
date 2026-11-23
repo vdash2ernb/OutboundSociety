@@ -6,7 +6,7 @@ export const faqs = [
   },
   {
     q: 'Do I need a costume?',
-    a: 'No. Costumes are optional (there are prizes if you do dress up). Comfortable running attire is perfect.',
+    a: 'No. Costumes are only a thing at our themed runs like the Haunted Night Run, and even there they are optional (with prizes if you dress up). Comfortable running attire is perfect.',
   },
   {
     q: 'How do I register?',

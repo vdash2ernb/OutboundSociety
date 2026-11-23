@@ -12,6 +12,7 @@ const pad = (n) => String(n).padStart(3, '0');
 const hnr = (n) => `${FB}/haunted-night-run-2025/haunted-night-run-2025-${pad(n)}.jpg`;
 const tl = (n) => `${FB}/photos-timeline/photos-timeline-${pad(n)}.jpg`;
 const mob = (n) => `${FB}/mobile-uploads/mobile-uploads-${pad(n)}.jpg`;
+const h26 = (n) => `${FB}/haunted-night-run-2026/haunted-night-run-2026-${n}.jpg`;
 
 // [output name, source file]
 const photos = [
@@ -64,8 +65,34 @@ const photos = [
   ['foam-party', `${MAPS}/maps-photo-15.jpg`],
   ['night-group', `${MAPS}/maps-photo-19.jpg`],
   ['zumba-night', `${MAPS}/review-photo-03.jpg`],
+  // Haunted Night Run 2026 (Nov 7, 2026), photos by Iskwad
+  ['hnr26-warmup', h26('64')],
+  ['hnr26-crew', h26('65')],
+  ['hnr26-bakeria', h26('04')],
+  ['hnr26-scream', h26('02')],
+  ['hnr26-duo', h26('03')],
+  ['hnr26-team', h26('06')],
+  ['hnr26-finishers', h26('09')],
+  ['hnr26-medals', h26('11')],
+  ['hnr26-zombie', h26('12')],
+  ['hnr26-thumbs', h26('67')],
+  ['hnr26-nun', h26('74')],
+  ['hnr26-costumes', h26('38')],
+  ['hnr26-catrina', h26('00')],
+  ['hnr26-fairy', h26('18')],
+  ['hnr26-kid', h26('20')],
+  ['hnr26-witch', h26('22')],
+  ['hnr26-hat', h26('28')],
+  ['hnr26-ghost', h26('29')],
+  ['hnr26-joy', h26('40')],
+  ['hnr26-catrina-pair', h26('59')],
+  ['hnr26-kids', h26('68')],
+  ['hnr26-pumpkin', h26('73')],
+  ['hnr26-trick-or-treat', h26('76')],
+  ['hnr26-tinkerbell', h26('79')],
   // Upcoming
   ['pit-senyor-poster', tl(270)],
+  ['santa-run-poster', `${FB}/posters-2026-11/santa-run-2026-poster.jpg`],
 ];
 
 const outDir = 'src/assets/photos';

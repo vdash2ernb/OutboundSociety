@@ -12,12 +12,16 @@ import { currentEvent as ev } from '../data/current-event';
     <Photo name={ev.poster} alt={`${ev.name} poster`} sizes="(max-width: 900px) 100vw, 40vw" />
   </div>
   <div class="details__body">
-    <div class="block" data-fade>
-      <h3>Race night</h3>
-      <ol class="schedule">
-        {ev.schedule.map((s) => <li><span class="accent">{s.time}</span>{s.label}</li>)}
-      </ol>
-    </div>
+    {
+      ev.schedule.length > 0 && (
+        <div class="block" data-fade>
+          <h3>Race day</h3>
+          <ol class="schedule">
+            {ev.schedule.map((s) => <li><span class="accent">{s.time}</span>{s.label}</li>)}
+          </ol>
+        </div>
+      )
+    }
     <div class="block" data-fade>
       <h3>Pick your distance</h3>
       <div class="cats">
@@ -25,17 +29,21 @@ import { currentEvent as ev } from '../data/current-event';
       </div>
     </div>
     <div class="block" data-fade>
-      <h3>Your {ev.fee} gets you</h3>
+      <h3>Every entry includes</h3>
       <ul class="ticks">
         {ev.included.map((i) => <li>{i}</li>)}
       </ul>
       <p class="muted">{ev.notes}</p>
     </div>
-    <div class="block" data-fade>
-      <h3>Candy stations</h3>
-      <p class="muted">The kids' route stops at local businesses handing out treats:</p>
-      <p class="chips">{ev.candyStations.map((c) => <span>{c}</span>)}</p>
-    </div>
+    {
+      ev.candyStations.length > 0 && (
+        <div class="block" data-fade>
+          <h3>Candy stations</h3>
+          <p class="muted">The kids' route stops at local businesses handing out treats:</p>
+          <p class="chips">{ev.candyStations.map((c) => <span>{c}</span>)}</p>
+        </div>
+      )
+    }
     <div class="details__actions" data-fade>
       <RegisterButton run={ev} label="Secure your slot" />
       <slot />

@@ -35,6 +35,15 @@ Other reels: running-shoe giveaways (Mar 7 and Jun 4, 2026), overnight-stay give
 - **Raffle sponsors:** Phoenix Super LPG, Conquer Fitness & Gym, FatBum's Burgers, Japal Food Manufacturing, FantasyWorld Ph (kids' VIP tickets), Sabon Station Cebu, Cafe 8020, Quezych LINE, Yalu Shop and others.
 - **Official event partner and meal partner:** Bakeria Box.
 
+## Update captured 2026-11-23
+
+- **Haunted Night Run 2026 (Nov 7, 2026) is done.** 548 runners, reported by Liloan Beam as a record. 34 raffle sponsors; the "Duster King" ran with an LPG tank and went viral (Fotopedia, Balitang Bisdak). Official photos are by Iskwad (80-photo album "Haunted Night Run 2026"); MoTo-JeT Shots and Fotopedia also posted albums. 24 picked photos are in `photos/haunted-night-run-2026/`.
+- **Pit Señor Fiesta Run 2027:** Jan 3, 2027, Sitio Suba, Poblacion, Liloan. 3 km ₱350, 10 km ₱450, with race bib, lechon, raffle and a finisher's medal. Cash prizes for the top 3 men and women: 10 km ₱3,000/₱2,000/₱1,000; 3 km ₱2,000/₱1,500/₱1,000. New form: https://forms.gle/oJAswEfAtsa95upa9. Onsite registration is at BIG APPLE by the bay. Co-organized with the Suba Sto. Niño Association.
+- **Virtual Santa Run 2026:** free, 10 km, Dec 25, 2026, anywhere in the world; Strava group https://strava.app.link/9qbX0VCni8b. The Google Form is "coming soon". Poster in `photos/posters-2026-11/`.
+- **Heart & Sole 2027:** Feb 14, 2027; 1 km or 5 km; ₱150 (per a Cebu Upcoming Events repost). Registration opens Dec 1, 2026, 9:00 AM; the first 30 get a gift from Chen's Creations.
+- **2027 calendar post:** Jan 3 Pit Señor, Feb 14 Heart and Sole, May (TBD) Roefan's Birthday Run.
+- SRCDC 2nd Alumni Pickleball Meet was held Nov 14, 2026 (event-management client work).
+
 ## Copy and story material
 
 - A post from the founder describes a high-school student who saved his school allowance (baon) to register. It is strong "why we do this" material for the About page; it was posted on the Facebook page.

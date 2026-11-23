@@ -28,14 +28,14 @@ const isCurrent = !past;
 const dateLabel = (iso: string) =>
   new Date(`${iso}T12:00:00+08:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'Asia/Manila' });
 
-// Last year's photos stand in for the current run's gallery until race night
+// A past run's photos stand in for the current run's gallery until race night
 const galleryRun = past ?? pastEvents.find((e) => e.slug === ev.galleryFrom)!;
 const run = {
   slug: past?.slug ?? ev.slug,
   name: past?.fullName ?? ev.name,
   headingLines: past?.headingLines ?? ev.headingLines,
   description: past?.description ?? ev.description,
-  lede: past?.summary ?? `${ev.tagline} Get your crew ready for a night of running, prizes, surprises and a little bit of fright.`,
+  lede: past?.summary ?? `${ev.tagline} ${ev.heroLede}`,
   story: past?.story ?? ev.story,
   date: past ? dateLabel(past.date) : ev.dateLabel,
   hero: past?.cover ?? ev.heroPhoto,

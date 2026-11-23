@@ -1,6 +1,6 @@
 // Structured data (schema.org JSON-LD) for search engines and AI answer engines.
 import { site } from '../data/site';
-import { currentEvent as ev, nextUp } from '../data/current-event';
+import { currentEvent as ev, type UpcomingRun } from '../data/current-event';
 import { pastEvents, type PastEvent } from '../data/past-events';
 
 type Abs = (path: string) => string;
@@ -60,26 +60,26 @@ export function currentEventSchema(abs: Abs, images: string[]) {
     '@type': 'Event',
     '@id': abs(`/events/${ev.slug}/#event`),
     name: ev.name,
-    description: `${ev.tagline} ${ev.categories.map((c) => `${c.name}: ${c.detail}.`).join(' ')} ${ev.fee} includes ${ev.included.slice(0, 2).join(' and ').toLowerCase()}. ${ev.notes}`,
-    startDate: ev.startsAt,
-    endDate: ev.endsAt,
+    description: `${ev.tagline} ${ev.categories.map((c) => `${c.name}: ${c.detail}`).join(' ')} Every entry includes ${ev.included.join(', ').toLowerCase()}. ${ev.notes}`,
+    startDate: ev.date,
+    endDate: ev.date,
     eventStatus: 'https://schema.org/EventScheduled',
     eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
     image: images,
     url: abs(`/events/${ev.slug}/`),
     location: {
       '@type': 'Place',
-      name: ev.venue,
-      address: { '@type': 'PostalAddress', streetAddress: 'Bajac', addressLocality: 'Liloan', addressRegion: 'Cebu', postalCode: '6002', addressCountry: 'PH' },
+      name: `${ev.venue}, ${ev.address}`,
+      address: { '@type': 'PostalAddress', streetAddress: ev.venue, addressLocality: 'Liloan', addressRegion: 'Cebu', postalCode: '6002', addressCountry: 'PH' },
     },
     offers: {
       '@type': 'Offer',
-      price: ev.fee.replace(/[^\d.]/g, ''),
+      price: ev.price,
       priceCurrency: 'PHP',
       url: ev.registerUrl,
       availability: ev.registrationOpen ? 'https://schema.org/InStock' : 'https://schema.org/SoldOut',
       validFrom: ev.registrationOpens,
-      validThrough: ev.registrationClosesAt,
+      ...(ev.registrationClosesAt ? { validThrough: ev.registrationClosesAt } : {}),
     },
     organizer: orgRef(abs),
     performer: orgRef(abs),
@@ -88,21 +88,19 @@ export function currentEventSchema(abs: Abs, images: string[]) {
   };
 }
 
-export function nextUpSchema(abs: Abs, image: string) {
+export function upcomingSchema(abs: Abs, run: UpcomingRun, image: string) {
   return {
     '@type': 'Event',
-    name: nextUp.name,
-    description: nextUp.blurb,
-    startDate: nextUp.date,
+    name: run.name,
+    description: run.blurb,
+    startDate: run.date,
     eventStatus: 'https://schema.org/EventScheduled',
-    eventAttendanceMode: 'https://schema.org/OfflineEventAttendanceMode',
+    eventAttendanceMode: run.virtual ? 'https://schema.org/OnlineEventAttendanceMode' : 'https://schema.org/OfflineEventAttendanceMode',
     image: [image],
-    url: abs('/events/'),
-    location: {
-      '@type': 'Place',
-      name: 'Sitio Suba, Poblacion',
-      address: { '@type': 'PostalAddress', streetAddress: 'Sitio Suba, Poblacion', addressLocality: 'Liloan', addressRegion: 'Cebu', addressCountry: 'PH' },
-    },
+    url: abs('/events/#coming-up'),
+    location: run.virtual
+      ? { '@type': 'VirtualLocation', url: run.link }
+      : { '@type': 'Place', name: 'Liloan, Cebu', address: { '@type': 'PostalAddress', addressLocality: 'Liloan', addressRegion: 'Cebu', addressCountry: 'PH' } },
     organizer: orgRef(abs),
   };
 }

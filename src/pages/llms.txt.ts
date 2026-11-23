@@ -2,7 +2,7 @@
 // Built from the same data files as the pages, so it stays current automatically.
 import type { APIRoute } from 'astro';
 import { site, reviews } from '../data/site';
-import { currentEvent as ev, nextUp } from '../data/current-event';
+import { currentEvent as ev, comingUp } from '../data/current-event';
 import { pastEvents } from '../data/past-events';
 
 export const GET: APIRoute = ({ site: origin }) => {
@@ -25,17 +25,17 @@ export const GET: APIRoute = ({ site: origin }) => {
 
 ## Current event: ${ev.name}
 - Page: ${url(`/events/${ev.slug}/`)}
-- Date: ${ev.dateLabel}; ${ev.schedule.map((s) => `${s.time} ${s.label}`).join('; ')}
+- Date: ${ev.dateLabel}${ev.schedule.map((s) => `; ${s.time} ${s.label}`).join('')}
 - Venue: ${ev.venue}, ${ev.address}
-- Registration fee: ${ev.fee}; ${ev.included.join('; ')}
+- Registration fee: ${ev.feeNote}; every entry includes ${ev.included.join(', ').toLowerCase()}
 - Distances: ${ev.categories.map((c) => `${c.name} (${c.detail})`).join('; ')}
-${ev.registrationOpen ? `- Register (Google Form): ${ev.registerUrl}\n- Registration closes: ${ev.registrationCloses}` : `- Registration closed on ${ev.registrationCloses}`}
+${ev.registrationOpen ? `- Register (Google Form): ${ev.registerUrl}\n- ${ev.registrationCloses ? `Registration closes: ${ev.registrationCloses}` : ev.registerNote}` : `- Registration closed on ${ev.registrationCloses}`}
 - ${ev.notes}
 
-## Coming up: ${nextUp.name}
-- Date: ${nextUp.dateLabel}
-- Place: ${nextUp.place}
-- ${nextUp.blurb}${nextUp.registrationOpen ? `\n- Register (Google Form): ${nextUp.registerUrl}` : ''}
+## Coming up
+${comingUp
+  .map((r) => `### ${r.name}\n- Date: ${r.dateLabel}\n- ${r.place}\n- ${r.blurb}\n- ${r.registrationOpen ? `Register (Google Form): ${r.registerUrl}` : r.soonNote}\n- Updates: ${r.link}`)
+  .join('\n\n')}
 
 ## Past events
 ${pastEvents.map((e) => `- [${e.fullName}](${url(`/events/${e.slug}/`)}) (${e.when}, ${e.where}): ${e.summary}`).join('\n')}

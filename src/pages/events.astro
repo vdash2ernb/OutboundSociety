@@ -9,15 +9,16 @@ import EventDetails from '../components/EventDetails.astro';
 import Faq from '../components/Faq.astro';
 import { faqs } from '../data/faqs';
 import { url } from '../lib/url';
-import { currentEvent as ev, nextUp } from '../data/current-event';
+import { currentEvent as ev, comingUp } from '../data/current-event';
 import { pastEvents } from '../data/past-events';
 import { site } from '../data/site';
-import { currentEventSchema, nextUpSchema, pastEventSchemas, faqSchema, breadcrumbs } from '../lib/schema';
+import { currentEventSchema, upcomingSchema, pastEventSchemas, faqSchema, breadcrumbs } from '../lib/schema';
 import { photoUrl } from '../lib/photo-url';
 
 const abs = (p: string) => new URL(p, Astro.site).toString();
 const eventImages = await Promise.all([ev.poster, ev.heroPhoto].map((n) => photoUrl(n, Astro.site)));
-const nextUpImage = await photoUrl(nextUp.poster, Astro.site);
+const upcomingImages = await Promise.all(comingUp.map((r) => photoUrl(r.poster, Astro.site)));
+const nextOpen = comingUp.find((r) => r.registrationOpen) ?? comingUp[0];
 const pastImages = Object.fromEntries(
   await Promise.all(pastEvents.map(async (e) => [e.cover, await photoUrl(e.cover, Astro.site)] as const))
 );
@@ -25,12 +26,12 @@ const pastImages = Object.fromEntries(
 
 <Base
   title={`${ev.name} · Liloan Fun Runs | ${site.name}`}
-  description={`${ev.name} is on ${ev.dateLabel} at ${ev.venue}, ${ev.address}. ${ev.fee} includes a finisher's medal and post-run meal. Kids 3 km and adults 5 km. ${ev.registrationOpen ? 'Register online now.' : `Next: ${nextUp.name}, ${nextUp.dateLabel}.`}`}
+  description={`${ev.name} is on ${ev.dateLabel} at ${ev.venue}, ${ev.address}. ${ev.feeNote}. ${ev.included.join(', ')}. ${ev.registrationOpen ? 'Register online now.' : `Next: ${nextOpen.name}, ${nextOpen.dateLabel}.`}`}
   image={ev.featurePhoto}
   imageAlt={`${ev.name}, a community night run in Liloan, Cebu`}
   schema={[
     currentEventSchema(abs, eventImages),
-    nextUpSchema(abs, nextUpImage),
+    ...comingUp.map((r, i) => upcomingSchema(abs, r, upcomingImages[i])),
     ...pastEventSchemas(abs, (n) => pastImages[n]),
     faqSchema(faqs),
     breadcrumbs(abs, [{ name: 'Events', path: '/events/' }]),
@@ -44,9 +45,9 @@ const pastImages = Object.fromEntries(
     <div class="wrap ehero__content">
       <span class="eyebrow">{ev.registrationOpen ? 'Now open' : 'Next run'} · {ev.dateLabel}</span>
       <SplitHeading as="h1" lines={ev.headingLines} accentLast />
-      <p class="lede">{ev.tagline} Get your crew ready for a night of running, prizes, surprises and a little bit of fright.</p>
+      <p class="lede">{ev.tagline} {ev.heroLede}</p>
       <div class="ehero__actions">
-        <RegisterButton run={ev} label={`Register · ${ev.fee}`} />
+        <RegisterButton run={ev} label={`Register · ${ev.fee.toLowerCase()}`} />
         <a href="#details" class="btn btn--ghost">See details ↓</a>
       </div>
     </div>
@@ -58,8 +59,12 @@ const pastImages = Object.fromEntries(
     items={[
       { label: 'Date', value: ev.dateLabel },
       { label: 'Venue', value: ev.venue, href: ev.mapUrl, note: ev.address },
-      { label: 'Entry', value: ev.fee, note: 'Medal + post-run meal' },
-      ev.registrationOpen ? { label: 'Register by', value: ev.registrationCloses } : { label: 'Registration', value: 'Closed', note: ev.registrationCloses },
+      { label: 'Entry', value: ev.fee, note: ev.feeNote },
+      ev.registrationOpen
+        ? ev.registrationCloses
+          ? { label: 'Register by', value: ev.registrationCloses }
+          : { label: 'Registration', value: 'Open', note: ev.registerNote }
+        : { label: 'Registration', value: 'Closed', note: ev.registrationCloses },
     ]}
   />
 
@@ -75,30 +80,26 @@ const pastImages = Object.fromEntries(
 
   <!-- COMING UP -->
   <section class="section upnext" id="coming-up">
-    <div class="wrap upnext__grid">
-      <div>
-        <span class="eyebrow">Coming up{nextUp.registrationOpen && ' · Registration open'}</span>
-        <SplitHeading lines={['Pit Señor', 'Fiesta Run']} accentLast />
-        <p class="upnext__date display" data-fade>{nextUp.dateLabel}</p>
-        <p class="lede" data-fade>{nextUp.blurb}</p>
-        {
-          nextUp.registrationOpen ? (
-            <>
-              <p class="muted" data-fade>{nextUp.place}</p>
+    <div class="wrap">
+      <span class="eyebrow">Coming up</span>
+      {
+        comingUp.map((r) => (
+          <article class="upnext__grid">
+            <div>
+              <span class="eyebrow">{r.registrationOpen ? 'Registration open' : r.virtual ? 'Virtual run' : 'Save the date'}</span>
+              <SplitHeading lines={r.headingLines} accentLast />
+              <p class="upnext__date display" data-fade>{r.dateLabel}</p>
+              <p class="lede" data-fade>{r.blurb}</p>
+              <p class="muted" data-fade>{r.place}{!r.registrationOpen && ` · ${r.soonNote}`}</p>
               <div class="upnext__actions" data-fade>
-                <RegisterButton run={nextUp} />
-                <a class="btn btn--ghost" href={nextUp.link} target="_blank" rel="noopener">Updates on Facebook ↗</a>
+                {r.registrationOpen && <RegisterButton run={r} />}
+                <a class="btn btn--ghost" href={r.link} target="_blank" rel="noopener">{r.linkLabel} ↗</a>
               </div>
-            </>
-          ) : (
-            <>
-              <p class="muted" data-fade>{nextUp.place} · Registration details coming soon on Facebook.</p>
-              <a class="btn btn--ghost" href={nextUp.link} target="_blank" rel="noopener" data-fade>Get notified on Facebook ↗</a>
-            </>
-          )
-        }
-      </div>
-      <Photo name={nextUp.poster} alt="Pit Señor Fiesta Run poster" sizes="(max-width: 900px) 100vw, 40vw" />
+            </div>
+            <Photo name={r.poster} alt={r.posterAlt} sizes="(max-width: 900px) 100vw, 40vw" />
+          </article>
+        ))
+      }
     </div>
   </section>
 
@@ -185,10 +186,15 @@ const pastImages = Object.fromEntries(
     background: var(--bg-2);
   }
   .upnext__grid {
+    padding-top: clamp(28px, 4vw, 48px);
     display: grid;
     grid-template-columns: 1.1fr 0.9fr;
     gap: clamp(32px, 6vw, 100px);
     align-items: center;
+  }
+  .upnext__grid + .upnext__grid {
+    margin-top: clamp(40px, 6vw, 90px);
+    border-top: 1px solid var(--line);
   }
   .upnext__grid > div:first-child {
     display: grid;
