@@ -90,14 +90,16 @@ export const comingUp = [
     name: 'Virtual Santa Run 2026',
     shortName: 'Santa Run', // for button labels
     headingLines: ['Virtual', 'Santa Run'],
-    registerUrl: '',
-    registrationOpen: false,
+    registerUrl: 'https://docs.google.com/forms/d/e/1FAIpQLSdNTUAXUxrBEoS4sI8DBLIofu4OeJSLXhO81ltvKalyxWe65Q/viewform',
+    registrationOpen: true,
+    // Signed-up runners get their bib by email and can download it again at /e-bib/
+    ebib: true,
     dateLabel: 'December 25, 2026',
     date: '2026-12-25',
     virtual: true,
     place: 'Anywhere in the world · 10 km · Free',
     blurb:
-      "A free 10 km Christmas run. Runners in different countries run on the same day, at the same time, and claim an official virtual race bib. The sign-up form is coming soon.",
+      'A free 10 km Christmas run. Runners in different countries run on the same day and wear an official virtual race bib. Sign up and your bib is emailed to you right away.',
     poster: 'santa-run-poster',
     posterAlt: 'Virtual Santa Run poster: a running Santa Claus with a race bib',
     link: 'https://strava.app.link/9qbX0VCni8b',

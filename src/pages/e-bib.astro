@@ -1,0 +1,227 @@
+---
+// "Get your e-bib": runners type the email they signed up with and download their bib.
+// The bibs live in Google Drive; this page asks the e-bib Apps Script web app for them
+// (see apps-script/ebib/ in this repo).
+import Base from '../layouts/Base.astro';
+import SplitHeading from '../components/SplitHeading.astro';
+import { comingUp } from '../data/current-event';
+import { site } from '../data/site';
+import { breadcrumbs } from '../lib/schema';
+
+// The Apps Script web app that looks bibs up (Deploy → Manage deployments in the script).
+const LOOKUP_URL =
+  'https://script.google.com/macros/s/AKfycbxXR6ZMPK0hKwUsTIaJjWHEQ_lCSDO1DE9PTUlQpANKTxwSVXprhEXCVCRqIcOwPnVA/exec';
+const run = comingUp.find((r) => r.ebib) ?? comingUp[0];
+const abs = (p: string) => new URL(p, Astro.site).toString();
+---
+
+<Base
+  title={`Get your e-bib · ${run.name} | ${site.name}`}
+  description={`Download your official race bib for the ${run.name}. Enter the email you signed up with.`}
+  image={run.poster}
+  imageAlt={run.posterAlt}
+  schema={[breadcrumbs(abs, [{ name: 'Get your e-bib', path: '/e-bib/' }])]}
+>
+  <section class="ebib wrap">
+    <span class="eyebrow">{run.name} · {run.dateLabel}</span>
+    <SplitHeading as="h1" lines={['Get your', 'e-bib.']} accentLast />
+    <p class="lede ebib__lede">
+      Signed up already? Your bib was emailed to you. Lost it, or want it again? Enter the email you used on the sign-up form.
+    </p>
+
+    <form class="ebib__form" id="ebib-form" data-lookup={LOOKUP_URL} novalidate>
+      <label class="ebib__label" for="ebib-email">Email you signed up with</label>
+      <div class="ebib__row">
+        <input id="ebib-email" name="email" type="email" inputmode="email" autocomplete="email" placeholder="you@example.com" required />
+        <button class="btn btn--cta" type="submit">Find my bib <span class="arrow" aria-hidden="true">→</span></button>
+      </div>
+      <p class="ebib__msg muted" id="ebib-msg" role="status" aria-live="polite"></p>
+    </form>
+
+    <div class="ebib__results" id="ebib-results"></div>
+
+    <p class="muted ebib__foot">
+      Not signed up yet?{' '}
+      {
+        run.registrationOpen ? (
+          <a class="link" href={run.registerUrl} target="_blank" rel="noopener">Sign up for the {run.shortName}</a>
+        ) : (
+          <span>Registration is closed.</span>
+        )
+      }
+      {' · '}Questions? <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
+    </p>
+  </section>
+</Base>
+
+<script>
+  type Bib = { name: string; bib: number; png: string; pdf: string };
+  type Res = { ok: boolean; reason?: string; event?: string; bibs?: Bib[] };
+
+  const blobUrl = (b64: string, type: string) => {
+    const bytes = Uint8Array.from(atob(b64), (c) => c.charCodeAt(0));
+    return URL.createObjectURL(new Blob([bytes], { type }));
+  };
+  const messages: Record<string, string> = {
+    input: 'Please enter a valid email address.',
+    notfound: "We couldn't find a sign-up with that email. Check the spelling, or use the email you typed on the form.",
+    pending: "We found your sign-up. Your bib is still being made: try again in a minute.",
+    busy: 'Too many tries for this email. Please wait 10 minutes and try again.',
+    error: 'Something went wrong on our side. Please try again in a moment.',
+  };
+
+  function setup() {
+    const form = document.querySelector<HTMLFormElement>('#ebib-form');
+    if (!form || form.dataset.ready) return;
+    form.dataset.ready = '1';
+    const msg = document.querySelector<HTMLElement>('#ebib-msg')!;
+    const results = document.querySelector<HTMLElement>('#ebib-results')!;
+    const button = form.querySelector('button')!;
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = (form.elements.namedItem('email') as HTMLInputElement).value.trim();
+      results.replaceChildren();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        msg.textContent = messages.input;
+        return;
+      }
+      msg.textContent = 'Looking for your bib…';
+      button.disabled = true;
+      let data: Res;
+      try {
+        const res = await fetch(`${form.dataset.lookup}?email=${encodeURIComponent(email)}`);
+        data = await res.json();
+      } catch {
+        data = { ok: false, reason: 'error' };
+      }
+      button.disabled = false;
+      if (!data.ok || !data.bibs) {
+        msg.textContent = messages[data.reason ?? 'error'] ?? messages.error;
+        return;
+      }
+      msg.textContent = data.bibs.length > 1 ? `Found ${data.bibs.length} bibs for this email.` : 'Here is your bib.';
+      for (const b of data.bibs) {
+        const png = blobUrl(b.png, 'image/png');
+        const pdf = blobUrl(b.pdf, 'application/pdf');
+        const file = `Santa-Run-bib-${b.bib}`;
+        const card = document.createElement('figure');
+        card.className = 'ebib__card';
+        card.innerHTML = `
+          <img alt="" width="960" height="540" />
+          <figcaption>
+            <span class="ebib__num display"></span>
+            <span class="ebib__name"></span>
+            <span class="ebib__actions">
+              <a class="btn btn--cta" download="${file}.png">Download PNG</a>
+              <a class="btn btn--ghost" download="${file}.pdf">Download PDF</a>
+            </span>
+          </figcaption>`;
+        const img = card.querySelector('img')!;
+        img.src = png;
+        img.alt = `Race bib ${b.bib} for ${b.name}`;
+        card.querySelector('.ebib__num')!.textContent = `Bib ${b.bib}`;
+        card.querySelector('.ebib__name')!.textContent = b.name;
+        const [a1, a2] = card.querySelectorAll('a');
+        a1.href = png;
+        a2.href = pdf;
+        results.append(card);
+      }
+    });
+  }
+  document.addEventListener('astro:page-load', setup);
+</script>
+
+<style>
+  .ebib {
+    padding-top: clamp(130px, 16vw, 220px);
+    padding-bottom: clamp(70px, 10vw, 140px);
+    display: grid;
+    gap: 26px;
+  }
+  .ebib :global(h1) {
+    font-size: clamp(56px, min(12vw, 17vh), 200px);
+    line-height: 0.85;
+  }
+  .ebib__lede {
+    max-width: 52ch;
+  }
+  .ebib__form {
+    display: grid;
+    gap: 10px;
+    max-width: 720px;
+    margin-top: 10px;
+  }
+  .ebib__label {
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .ebib__row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .ebib__row input {
+    flex: 1 1 280px;
+    height: 58px;
+    padding: 0 22px;
+    border-radius: 999px;
+    border: 1.5px solid var(--line);
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+    font-size: 17px;
+  }
+  .ebib__row input:focus-visible {
+    outline: none;
+    border-color: var(--orange);
+  }
+  .ebib__row button:disabled {
+    opacity: 0.6;
+    cursor: progress;
+  }
+  .ebib__msg {
+    min-height: 1.5em;
+    margin: 0;
+  }
+  .ebib__results {
+    display: grid;
+    gap: 34px;
+  }
+  .ebib__results :global(.ebib__card) {
+    margin: 0;
+    display: grid;
+    gap: 18px;
+    max-width: 960px;
+  }
+  .ebib__results :global(.ebib__card img) {
+    width: 100%;
+    height: auto;
+    border-radius: 14px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+  }
+  .ebib__results :global(figcaption) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 18px;
+  }
+  .ebib__results :global(.ebib__num) {
+    font-size: clamp(28px, 4vw, 40px);
+  }
+  .ebib__results :global(.ebib__name) {
+    color: var(--muted);
+    margin-right: auto;
+  }
+  .ebib__results :global(.ebib__actions) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .ebib__foot {
+    margin-top: 10px;
+  }
+</style>

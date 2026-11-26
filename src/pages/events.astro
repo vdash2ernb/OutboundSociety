@@ -93,6 +93,7 @@ const pastImages = Object.fromEntries(
               <p class="muted" data-fade>{r.place}{!r.registrationOpen && ` · ${r.soonNote}`}</p>
               <div class="upnext__actions" data-fade>
                 {r.registrationOpen && <RegisterButton run={r} />}
+                {r.ebib && <a class="btn btn--ghost" href={url('/e-bib/')}>Get your e-bib →</a>}
                 <a class="btn btn--ghost" href={r.link} target="_blank" rel="noopener">{r.linkLabel} ↗</a>
               </div>
             </div>
