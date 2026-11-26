@@ -36,11 +36,11 @@ const BIB_BOX = { x: 20, y: 107, w: 536, h: 226, size: 168 };
 
 // Bibs tab columns (1-based)
 const COL = {
-  key: 1, registered: 2, name: 3, email: 4, country: 5, gender: 6, category: 7, strava: 8,
-  bib: 9, status: 10, pdf: 11, emailedAt: 12, pngId: 13, pdfId: 14,
+  key: 1, registered: 2, name: 3, email: 4, country: 5, strava: 6,
+  bib: 7, status: 8, pdf: 9, emailedAt: 10, pngId: 11, pdfId: 12,
 };
 const HEADERS = [
-  'Response ID', 'Registered', 'Name on bib', 'Email', 'Country', 'Gender', 'Age group', 'Strava name',
+  'Response ID', 'Registered', 'Name on bib', 'Email', 'Country', 'Strava name',
   'Bib No.', 'Status', 'Bib PDF', 'Emailed At', 'PNG file id', 'PDF file id',
 ];
 const STATUS = { sent: 'Sent', noEmail: 'Bib made (no email on file)', test: 'Test (not emailed)' };
@@ -49,8 +49,6 @@ const STATUS = { sent: 'Sent', noEmail: 'Bib made (no email on file)', test: 'Te
 const Q = {
   name: 'Name on your bib',
   country: 'Country',
-  gender: 'Gender',
-  category: 'Age group',
   strava: 'Strava name (optional)',
   waiver: 'Waiver',
 };
@@ -88,6 +86,8 @@ function setup() {
 
   let sh = ss.getSheetByName(BIBS_SHEET);
   if (!sh) sh = ss.insertSheet(BIBS_SHEET, 0);
+  sh.showColumns(1, sh.getMaxColumns());
+  sh.getRange(1, 1, 1, sh.getMaxColumns()).clearContent().clearFormat();
   sh.getRange(1, 1, 1, HEADERS.length).setValues([HEADERS])
     .setFontWeight('bold').setBackground('#5a0b12').setFontColor('#fbf6ee');
   sh.setFrozenRows(1);
@@ -132,9 +132,6 @@ function createForm_(ss) {
 
   form.addTextItem().setTitle(Q.name).setHelpText('Your name as it should appear on the bib.').setRequired(true);
   form.addTextItem().setTitle(Q.country).setHelpText('Where you will run from.').setRequired(true);
-  form.addMultipleChoiceItem().setTitle(Q.gender).setChoiceValues(['Female', 'Male', 'Prefer not to say']).setRequired(true);
-  form.addMultipleChoiceItem().setTitle(Q.category)
-    .setChoiceValues(['Kids (1 - 11)', 'Teens (12 - 17)', 'Adult (18 - 49)', 'Senior (50 Above)']).setRequired(true);
   form.addTextItem().setTitle(Q.strava).setHelpText('So we can find you in the Strava group.');
   form.addCheckboxItem().setTitle(Q.waiver)
     .setHelpText(
@@ -173,7 +170,7 @@ function syncRegistrations_() {
     const at = (title) => h.findIndex((x) => x.toLowerCase() === title.toLowerCase());
     const idx = {
       ts: at('Timestamp'), email: h.findIndex((x) => /email/i.test(x)), name: at(Q.name), country: at(Q.country),
-      gender: at(Q.gender), category: at(Q.category), strava: at(Q.strava),
+      strava: at(Q.strava),
     };
     const existing = new Set(columnValues_(bibs, COL.key).map(String));
     const rows = [];
@@ -186,7 +183,7 @@ function syncRegistrations_() {
       if (existing.has(key)) continue;
       existing.add(key);
       const get = (i) => (i >= 0 ? String(row[i]).trim() : '');
-      rows.push([key, ts, get(idx.name), email, get(idx.country), get(idx.gender), get(idx.category), get(idx.strava),
+      rows.push([key, ts, get(idx.name), email, get(idx.country), get(idx.strava),
         '', '', '', '', '', '']);
     }
     if (rows.length) bibs.getRange(bibs.getLastRow() + 1, 1, rows.length, HEADERS.length).setValues(rows);
@@ -225,7 +222,6 @@ function previewSelected() {
     name: v[COL.name - 1] || 'Juan Dela Cruz',
     bib: v[COL.bib - 1] || EVENT.firstBib,
     country: v[COL.country - 1] || 'Philippines',
-    category: v[COL.category - 1] || 'Adult (18 - 49)',
   }, 'PREVIEW ');
   const html = HtmlService.createHtmlOutput(
     '<p style="font-family:sans-serif">Preview only. Nothing was emailed and no bib number was used.</p>' +
@@ -242,9 +238,9 @@ function renderSamples() {
   const it = DriveApp.getFolderById(prop_('BIBS_FOLDER_ID')).searchFiles("title contains 'SAMPLE ' and trashed = false");
   while (it.hasNext()) it.next().setTrashed(true);
   [
-    { name: 'Ana Cruz', bib: 1001, country: 'Philippines', category: 'Adult (18 - 49)' },
-    { name: 'Maria Theresa Villanueva', bib: 1234, country: 'United Arab Emirates', category: 'Senior (50 Above)' },
-    { name: 'Christopher Alexander Montenegro', bib: 1888, country: 'Canada', category: 'Teens (12 - 17)' },
+    { name: 'Ana Cruz', bib: 1001, country: 'Philippines' },
+    { name: 'Maria Theresa Villanueva', bib: 1234, country: 'United Arab Emirates' },
+    { name: 'Christopher Alexander Montenegro', bib: 1888, country: 'Canada' },
   ].forEach((r) => {
     const f = makeBib_(r, 'SAMPLE ');
     Logger.log('%s → %s', r.name, f.png.getUrl());
@@ -270,7 +266,7 @@ function processRow_(sh, row, opts) {
     [v[COL.pngId - 1], v[COL.pdfId - 1]].filter(String).forEach((id) => {
       try { DriveApp.getFileById(id).setTrashed(true); } catch (err) {}
     });
-    const runner = { name, bib, country: v[COL.country - 1], category: v[COL.category - 1] };
+    const runner = { name, bib, country: v[COL.country - 1] };
     const files = makeBib_(runner, '');
     sh.getRange(row, COL.pdf).setValue(files.pdf.getUrl());
     sh.getRange(row, COL.pngId, 1, 2).setValues([[files.png.getId(), files.pdf.getId()]]);
@@ -325,7 +321,7 @@ function makeBib_(runner, prefix) {
     deck.replaceAllText('{{BIB}}', String(runner.bib));
     const short = name.length > 22 ? name.split(/\s+/)[0] : name;
     deck.replaceAllText('{{SHORTNAME}}', short);
-    const sub = [runner.country, runner.category].map((x) => String(x || '').trim()).filter(String).join('  ·  ');
+    const sub = String(runner.country || '').trim();
     deck.replaceAllText('{{DETAILS}}', sub.toUpperCase());
     deck.saveAndClose();
 
