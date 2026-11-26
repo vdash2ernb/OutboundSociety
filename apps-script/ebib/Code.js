@@ -25,7 +25,14 @@ const EVENT = {
 };
 
 const BIBS_SHEET = 'Bibs';
-const LOGO_URL = 'https://outboundsociety.org/icon-512.png';
+// Bib artwork, drawn by scripts/make-bib-art.mjs in the website repo
+const ART_URLS = [
+  'https://outboundsociety.org/ebib/santa-run-2026-bib.jpg',
+  'https://raw.githubusercontent.com/vdash2ernb/OutboundSociety/main/public/ebib/santa-run-2026-bib.jpg',
+];
+// Where the big number sits (points on the 720×405 slide). Anton has more room above its
+// digits than below, so the box is nudged to make the digits look centred in the panel.
+const BIB_BOX = { x: 20, y: 107, w: 536, h: 226, size: 168 };
 
 // Bibs tab columns (1-based)
 const COL = {
@@ -229,6 +236,21 @@ function previewSelected() {
   files.pdf.setTrashed(true);
 }
 
+/** Design check: makes sample bibs (short, long and very long names) in the e-Bibs folder,
+ *  without emailing anyone or using a bib number. Run it from the script editor. */
+function renderSamples() {
+  const it = DriveApp.getFolderById(prop_('BIBS_FOLDER_ID')).searchFiles("title contains 'SAMPLE ' and trashed = false");
+  while (it.hasNext()) it.next().setTrashed(true);
+  [
+    { name: 'Ana Cruz', bib: 1001, country: 'Philippines', category: 'Adult (18 - 49)' },
+    { name: 'Maria Theresa Villanueva', bib: 1234, country: 'United Arab Emirates', category: 'Senior (50 Above)' },
+    { name: 'Christopher Alexander Montenegro', bib: 1888, country: 'Canada', category: 'Teens (12 - 17)' },
+  ].forEach((r) => {
+    const f = makeBib_(r, 'SAMPLE ');
+    Logger.log('%s → %s', r.name, f.png.getUrl());
+  });
+}
+
 function processRow_(sh, row, opts) {
   const lock = LockService.getScriptLock();
   lock.waitLock(30000);
@@ -296,23 +318,37 @@ function makeBib_(runner, prefix) {
       if (t.asString().includes('{{NAME}}')) {
         t.replaceAllText('{{NAME}}', name);
         const len = name.length;
-        t.getTextStyle().setFontSize(len <= 18 ? 32 : len <= 24 ? 26 : len <= 30 ? 21 : 17);
+        t.getTextStyle().setFontSize(len <= 18 ? 28 : len <= 24 ? 26 : len <= 32 ? 24 : 20);
       }
     });
+    deck.replaceAllText('{{BARCODE}}', '*' + runner.bib + '*');
     deck.replaceAllText('{{BIB}}', String(runner.bib));
+    const short = name.length > 22 ? name.split(/\s+/)[0] : name;
+    deck.replaceAllText('{{SHORTNAME}}', short);
     const sub = [runner.country, runner.category].map((x) => String(x || '').trim()).filter(String).join('  ·  ');
     deck.replaceAllText('{{DETAILS}}', sub.toUpperCase());
     deck.saveAndClose();
 
     const pdf = folder.createFile(copy.getAs('application/pdf').setName(base + '.pdf'));
-    const res = UrlFetchApp.fetch(
-      'https://docs.google.com/presentation/d/' + copy.getId() + '/export/png?pageid=' + slide.getObjectId(),
-      { headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() } },
-    );
-    const png = folder.createFile(res.getBlob().setName(base + '.png'));
+    const png = folder.createFile(exportPng_(copy.getId(), slide.getObjectId()).setName(base + '.png'));
     return { pdf, png };
   } finally {
     copy.setTrashed(true);
+  }
+}
+
+/** 1600 px PNG of a slide (Slides API thumbnail), falling back to the 960 px export. */
+function exportPng_(deckId, pageId) {
+  try {
+    const t = Slides.Presentations.Pages.getThumbnail(deckId, pageId, {
+      'thumbnailProperties.thumbnailSize': 'LARGE',
+      'thumbnailProperties.mimeType': 'PNG',
+    });
+    return UrlFetchApp.fetch(t.contentUrl).getBlob();
+  } catch (err) {
+    return UrlFetchApp.fetch('https://docs.google.com/presentation/d/' + deckId + '/export/png?pageid=' + pageId, {
+      headers: { Authorization: 'Bearer ' + ScriptApp.getOAuthToken() },
+    }).getBlob();
   }
 }
 
@@ -371,51 +407,56 @@ function rebuildTemplate() {
   SpreadsheetApp.getActive().toast('New bib template made in the e-Bibs folder.', 'e-Bibs');
 }
 
-/** Builds the bib design in Google Slides. You can restyle the deck by hand afterwards:
- *  keep the {{BIB}}, {{NAME}} and {{DETAILS}} placeholders. */
+/** Builds the bib in Google Slides: the artwork (drawn by scripts/make-bib-art.mjs in the
+ *  website repo and served from outboundsociety.org) as a full-bleed image, with the text on top.
+ *  You can restyle the text by hand afterwards: keep the {{...}} placeholders. */
 function createTemplate_() {
-  const MAROON = '#5a0b12', CREAM = '#fbf6ee', GREEN = '#1d7a3e', INK = '#2a0508', MUTED = '#8a6a6c';
+  const CREAM = '#fbf6ee', GOLD = '#e9cf8a', INK = '#1d0407', MAROON = '#6e0f1b', MUTED = '#7d6a5c', BROWN = '#7a5219';
   const deck = SlidesApp.create(EVENT.name + ' · Bib template');
   const slide = deck.getSlides()[0];
   slide.getPageElements().forEach((el) => el.remove());
-  slide.getBackground().setSolidFill(MAROON);
-  const W = 720;
+  const art = ART_URLS.map((u) => UrlFetchApp.fetch(u, { muteHttpExceptions: true }))
+    .find((r) => r.getResponseCode() === 200);
+  if (!art) throw new Error('Could not download the bib artwork');
+  slide.insertImage(art.getBlob(), 0, 0, 720, 405).sendToBack();
 
-  const box = (x, y, w, h, fill, round) => {
-    const s = slide.insertShape(round ? SlidesApp.ShapeType.ROUND_RECTANGLE : SlidesApp.ShapeType.RECTANGLE, x, y, w, h);
-    s.getFill().setSolidFill(fill);
-    s.getBorder().setTransparent();
-    return s;
-  };
+  const C = SlidesApp.ParagraphAlignment.CENTER, L = SlidesApp.ParagraphAlignment.START;
   const text = (str, x, y, w, h, o) => {
     const s = slide.insertTextBox(str, x, y, w, h);
-    const st = s.getText().getTextStyle();
-    st.setFontFamily(o.font).setFontSize(o.size).setForegroundColor(o.color);
-    if (o.bold) st.setBold(true);
-    s.getText().getParagraphStyle().setParagraphAlignment(o.align || SlidesApp.ParagraphAlignment.CENTER);
-    s.setContentAlignment(SlidesApp.ContentAlignment.MIDDLE);
+    const t = s.getText();
+    t.getTextStyle().setFontFamily(o.font).setFontSize(o.size).setForegroundColor(o.color).setBold(!!o.bold);
+    t.getParagraphStyle().setParagraphAlignment(o.align || C).setLineSpacing(100).setSpaceAbove(0).setSpaceBelow(0);
+    s.setContentAlignment(o.v || SlidesApp.ContentAlignment.MIDDLE);
     return s;
   };
-  const L = SlidesApp.ParagraphAlignment.START;
+  const track = (s) => s.split('').join(' '); // hair spaces: letter-spaced caps
 
-  // Header on maroon: logo, title, date line, distance tag
-  try { slide.insertImage(UrlFetchApp.fetch(LOGO_URL).getBlob(), 20, 14, 66, 66); } catch (err) {}
-  text(EVENT.name, 98, 12, 470, 46, { font: 'DM Serif Display', size: 32, color: CREAM, align: L });
-  text((EVENT.date + '  ·  ' + EVENT.where).toUpperCase(), 100, 54, 470, 24,
-    { font: 'Inter Tight', size: 10, color: '#f2c9a0', bold: true, align: L });
-  box(586, 22, 116, 50, GREEN, true);
-  text(EVENT.distance, 586, 22, 116, 50, { font: 'Anton', size: 26, color: CREAM });
+  // Header
+  const title = text('Virtual Santa Run 2026', 100, 14, 420, 42, { font: 'DM Serif Display', size: 31, color: CREAM, align: L });
+  const yr = title.getText().find('2026')[0];
+  if (yr) yr.getTextStyle().setForegroundColor(GOLD);
+  text(track('25 DECEMBER 2026  ·  RUN ANYWHERE IN THE WORLD'), 101, 54, 440, 20, { font: 'Inter Tight', size: 8, color: GOLD, bold: true, align: L });
+  // Distance medallion (circle drawn in the art, centre 648,45)
+  text('10K', 616, 24, 64, 34, { font: 'Anton', size: 25, color: CREAM });
+  text(track('VIRTUAL'), 616, 52, 64, 12, { font: 'Inter Tight', size: 5.5, color: GOLD, bold: true });
 
-  // The bib card
-  box(20, 94, W - 40, 236, CREAM, true);
-  box(52, 106, W - 104, 6, GREEN);
-  text('{{BIB}}', 20, 104, W - 40, 176, { font: 'Anton', size: 150, color: INK });
-  text('{{DETAILS}}', 20, 282, W - 40, 34, { font: 'Inter Tight', size: 12, color: MUTED, bold: true });
+  // Main panel (x 0–576): labels, the number, the name
+  text(track('RUNNER NO.'), 38, 104, 160, 16, { font: 'Inter Tight', size: 6.5, color: MUTED, bold: true, align: L });
+  text(track('OFFICIAL VIRTUAL BIB'), 378, 104, 160, 16, { font: 'Inter Tight', size: 6.5, color: MUTED, bold: true, align: SlidesApp.ParagraphAlignment.END });
+  text('{{BIB}}', BIB_BOX.x, BIB_BOX.y, BIB_BOX.w, BIB_BOX.h, { font: 'Anton', size: BIB_BOX.size, color: INK });
+  text('{{NAME}}', 40, 323, 496, 36, { font: 'Anton', size: 28, color: INK });
+  text('{{DETAILS}}', 40, 357, 496, 14, { font: 'Inter Tight', size: 7.5, color: MAROON, bold: true });
+  text(track('OUTBOUND SOCIETY  ·  OUTBOUNDSOCIETY.ORG'), 40, 372, 496, 12, { font: 'Inter Tight', size: 5.5, color: MUTED, bold: true });
 
-  // Runner's name + footer
-  text('{{NAME}}', 30, 334, W - 60, 46, { font: 'Anton', size: 32, color: CREAM });
-  text('OUTBOUND SOCIETY  ·  RUN IT ON STRAVA  ·  OUTBOUNDSOCIETY.ORG', 0, 380, W, 20,
-    { font: 'Inter Tight', size: 8, color: '#f2c9a0', bold: true });
+  // Tear-off stub (x 576–720)
+  text(track('BIB NO.'), 584, 106, 128, 12, { font: 'Inter Tight', size: 6, color: MUTED, bold: true });
+  text('{{BIB}}', 584, 116, 128, 40, { font: 'Anton', size: 32, color: INK });
+  text('{{BARCODE}}', 584, 160, 128, 44, { font: 'Libre Barcode 39', size: 36, color: INK });
+  text(track('10 KM  ·  VIRTUAL'), 584, 206, 128, 12, { font: 'Inter Tight', size: 6, color: MAROON, bold: true });
+  text('{{SHORTNAME}}', 584, 222, 128, 26, { font: 'Inter Tight', size: 7.5, color: INK, bold: true, v: SlidesApp.ContentAlignment.TOP });
+  text(track('25 · 12 · 2026'), 584, 250, 128, 12, { font: 'Inter Tight', size: 6, color: MUTED, bold: true });
+  text('Santa Run', 584, 270, 128, 24, { font: 'DM Serif Display', size: 15, color: MAROON });
+  text(track('OFFICIAL ENTRY'), 584, 310, 128, 12, { font: 'Inter Tight', size: 5.5, color: BROWN, bold: true });
 
   deck.saveAndClose();
   DriveApp.getFileById(deck.getId()).moveTo(DriveApp.getFolderById(prop_('FOLDER_ID')));
@@ -429,6 +470,13 @@ function createTemplate_() {
 function doGet(e) {
   const p = (e && e.parameter) || {};
   const out = (o) => ContentService.createTextOutput(JSON.stringify(o)).setMimeType(ContentService.MimeType.JSON);
+  // ?preview=samples → the design samples made by renderSamples() (made-up runners only)
+  if (p.preview === 'samples') {
+    const it = DriveApp.getFolderById(prop_('BIBS_FOLDER_ID')).searchFiles("title contains 'SAMPLE ' and mimeType = 'image/png' and trashed = false");
+    const files = [];
+    while (it.hasNext()) files.push(it.next());
+    return out({ ok: true, samples: files.map((f) => ({ name: f.getName(), png: Utilities.base64Encode(f.getBlob().getBytes()) })) });
+  }
   const email = String(p.email || '').trim().toLowerCase();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return out({ ok: false, reason: 'input' });
 

@@ -27,9 +27,11 @@ Everything runs in roe@outboundsociety.org's Google account. Nothing here costs 
 - **Status says Error / a bib didn't go out:** *Send bibs that haven't gone out*.
 - **Runner fixed a typo in their name:** edit *Name on bib*, select the row, *Re-send bib for selected rows*.
   Their number stays the same.
-- **Change the design:** edit the *Bib template* deck by hand (keep `{{BIB}}`, `{{NAME}}`, `{{DETAILS}}`),
-  or change `createTemplate_()` and run *Rebuild bib template*. *Preview bib for selected row* shows it
-  without emailing anyone.
+- **Change the design:** the artwork (header, guilloche, pin holes, stub, seal, candy-cane edge) is drawn by
+  `scripts/make-bib-art.mjs` → `public/ebib/santa-run-2026-bib.jpg` (run `node scripts/make-bib-art.mjs`, push).
+  The runner's text sits on top in Google Slides, laid out in `createTemplate_()` (the big number's box is
+  `BIB_BOX`). After a change, run *Rebuild bib template*, then `renderSamples` in the script editor: it makes
+  three sample bibs with made-up runners (nothing is emailed), viewable at the web app URL with `?preview=samples`.
 
 ## Changing the code
 
